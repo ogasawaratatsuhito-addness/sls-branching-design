@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>✍️ G3 学習③ 添削 ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html" class="active">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ ✍️ 学習③ 作ったものを添削してほしい（G3）</h1>
+<blockquote>
+<p>共通仕様=<code>00_共通仕様.md</code> ／ 体験像の正本=v9<br />
+根拠データ: 実質問268件（5束）。最多はポートフォリオ/成果物175件。</p>
+</blockquote>
+<h2>この相談の設計方針（v9より）</h2>
+<ul>
+<li>「今この『○○』の話だよね？ 作ったもの見せて」から始まる。</li>
+<li>成果物を受け取る（画像・動画・資料・テキスト、どれでも）→ <strong>「特にどこを見てほしい？」を必ず聞く</strong>（言葉にできない人には「とりあえず全体を見て」の逃げ道）→ 今のアクションの担当（講師/CS）に届く → 「24時間以内に返事くるね」。</li>
+<li>その場で解決するタイプの相談ではない＝<strong>全件HANDOFF</strong>。解決確認ループなし。</li>
+</ul>
+<h2>フロー全体図</h2>
+<p><div class="mermaid">flowchart TD
+    A[G3-000 今この○○の話だよね?] -->|そう| B[G3-100 作ったもの見せて ATTACH/URL]
+    A -->|ちがう| E0[E0-020 メニューへ]
+    B --> C[G3-200 どこを見てほしい?]
+    C -->|入力 or 全体を見て| D[G3-400 HANDOFF 担当講師/CS]
+    D --> E[G3-401 24時間以内に返事くるね] --> Z[END]
+</div></p>
+<h2>ノード定義</h2>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G3-000</td>
+<td>CHOICE</td>
+<td>今この「<strong>○○</strong>（いま取り組んでるアクション）」の話だよね？😊<br>1️⃣ そう！ 2️⃣ ちがう話</td>
+<td>1→G3-100 ／ 2→E0-020</td>
+</tr>
+<tr>
+<td>G3-100</td>
+<td>ATTACH</td>
+<td>作ったもの、見せて〜！😊<br>画像・動画・資料・テキスト、どれでもOKだよ。URLでも大丈夫👌</td>
+<td>添付/URL/テキスト→G3-200</td>
+</tr>
+<tr>
+<td>G3-200</td>
+<td>CHOICE</td>
+<td>特にどこを見てほしい？ なにか不安なところある？<br>例）提案文→通過率を上げたい ／ プロフィール→信頼感を出したい ／ コード→動作の安定性 …など<br>1️⃣ 見てほしい点を書く 2️⃣ とりあえず全体を見て！</td>
+<td>1→INPUT後G3-400 ／ 2→G3-400（「全体添削希望」と記録）</td>
+</tr>
+<tr>
+<td>G3-400</td>
+<td>HANDOFF</td>
+<td>（内部）翻訳テンプレに整形して<strong>今のアクションの添削担当（講師/CS）</strong>へ:<br>【相談内容】添削依頼（成果物の種類）<br>【背景・状況】今のアクション名＋成果物（添付/URL）<br>【してほしいこと】見てほしい点（G3-200の入力。無ければ「全体添削」）<br>【これまでの経緯】―</td>
+<td>→G3-401</td>
+</tr>
+<tr>
+<td>G3-401</td>
+<td>MSG</td>
+<td>担当に送っておいたよ！<strong>24時間以内に返事くるね✨</strong> 返事を待つ間、次のアクションも覗いてみてね😊</td>
+<td>→END</td>
+</tr>
+</tbody>
+</table>
+<h2>自由入力のキーワード判定（E0からの流入用）</h2>
+<p>添削, レビュー, 見てほしい, 見て欲しい, 見ていただ, チェックして, フィードバック, ポートフォリオ, 作りました, 作成しました, 完成しました, 成果物, 講評, プロフィール写真, 顔写真（※写真の可否/選定相談も添削で受ける＝昇格済み束）</p>
+<h2>〔要確認〕</h2>
+<ol>
+<li><strong>添削の返し手</strong>: AI一次添削を挟むか、講師が直接返すか（v9確認点①）→ LLMなし版は講師直のみ</li>
+<li><strong>成果物の受け渡し導線</strong>: 画像・動画・URLをSLS内で担当へどう渡すか（ワンタップが理想／受講生が貼る形でも可）</li>
+</ol>
+<h2>UI実装への申し送り（菅さん向け）</h2>
+<ul>
+<li>受け取れる形式は<strong>画像・動画・資料・テキスト・URLすべて</strong>（v9要件）。形式で弾かない。</li>
+<li>「担当」＝今のアクションの添削担当を自動特定できるのが理想〔要確認: アクション→担当のマッピング取得可否〕。</li>
+</ul>
+<h2>根拠データ（束・件数）</h2>
+<table>
+<thead>
+<tr>
+<th>束ID</th>
+<th>束</th>
+<th style="text-align: right;">件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G3-01</td>
+<td>ポートフォリオ/成果物を見てほしい</td>
+<td style="text-align: right;">175</td>
+</tr>
+<tr>
+<td>G3-02</td>
+<td>束外（共通フロー）</td>
+<td style="text-align: right;">74</td>
+</tr>
+<tr>
+<td>G3-03</td>
+<td>提案文・プロフィールの添削</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>G3-04</td>
+<td>記事・文章の添削</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>G3-05</td>
+<td>アプリ・ツール・制作物のレビュー</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>

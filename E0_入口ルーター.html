@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🚪 E0 入口ルーター ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html" class="active">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ 🚪 E0 入口ルーター（全相談の振り分け）</h1>
+<blockquote>
+<p>v9全体像①②③: 全ページ右下にスキルプラスくん常駐 →「どうしました？」＋メニュー → 9相談へ分岐。<br />
+共通仕様=<code>00_共通仕様.md</code></p>
+</blockquote>
+<h2>フロー全体図</h2>
+<p><div class="mermaid">flowchart TD
+    A[E0-000 入口<br>どうしました? + 9相談メニュー] -->|メニュー選択| B[各相談の入口ノードへ]
+    A -->|自由入力| C[E0-010 キーワード判定]
+    C -->|判定OK| D[E0-011 もしかして◯◯の相談かな?]
+    D -->|そう!| B
+    D -->|ちがう| E[E0-020 9相談メニュー再提示]
+    C -->|判定不能| E
+    E -->|選択| B
+    E -->|どれでもない| X[X-000 その他へ]
+</div></p>
+<h2>ノード定義</h2>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E0-000</td>
+<td>CHOICE</td>
+<td>どうしました？😊 気軽に話しかけてね。近いものを選んでもOKだよ👇<br>1️⃣ 🧭 これからの進め方を相談したい<br>2️⃣ 📘 講義の内容で分からないところがある<br>3️⃣ ✍️ 作ったものを添削してほしい<br>4️⃣ 💼 案件・お客様対応の相談<br>5️⃣ 🛠️ うまく動かない・エラーが出る<br>6️⃣ 📅 予約の確認・変更<br>7️⃣ 💳 お支払い・ご契約について<br>8️⃣ 📂 資料・アーカイブ・特典の場所<br>9️⃣ 💬 その他のご相談</td>
+<td>1→G1-000 ／ 2→G2-000 ／ 3→G3-000 ／ 4→G4-000 ／ 5→S1-000 ／ 6→S2-000 ／ 7→S3-000 ／ 8→S4-000 ／ 9→X-000 ／ 自由入力→E0-010</td>
+</tr>
+<tr>
+<td>E0-010</td>
+<td>INPUT</td>
+<td>（内部）自由入力を下のキーワード判定表で判定（上の行から先勝ち）</td>
+<td>判定OK→E0-011 ／ 判定不能→E0-020</td>
+</tr>
+<tr>
+<td>E0-011</td>
+<td>CHOICE</td>
+<td>もしかして「◯◯（判定された相談名）」のことかな？<br>1️⃣ そう！ 2️⃣ ちがう</td>
+<td>1→該当相談の入口 ／ 2→E0-020</td>
+</tr>
+<tr>
+<td>E0-020</td>
+<td>CHOICE</td>
+<td>オッケー、じゃあ近いものを選んでみてね👇（E0-000と同じ9択＋「どれでもない」）</td>
+<td>各相談 ／ どれでもない→X-000</td>
+</tr>
+</tbody>
+</table>
+<h2>自由入力のキーワード判定表（E0-010用）</h2>
+<blockquote>
+<p>根拠: 全期間の実質問5,058件のキーワード分類（<code>../classify_branching.py</code>と同じ優先順位＝<strong>具体的な相談を先に判定</strong>）。判定した後は必ずE0-011で本人確認するので、誤判定はユーザーが直せる。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">優先</th>
+<th>判定先</th>
+<th>キーワード（部分一致・小文字化）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>G3 添削</td>
+<td>添削, レビュー, 見てほしい, 見て欲しい, 見ていただ, チェックして, フィードバック, ポートフォリオ, 作りました, 作成しました, 完成しました, 成果物, 講評</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>S3 支払い・契約</td>
+<td>解約, 退会, 休会, 返金, 引き落と, 引落, 支払, 料金, 受講料, 月額, 請求, 契約, クレジット, クレカ, 分割, 決済, 領収, インボイス, クーリングオフ, 受講期間, 保証期間, 更新, プラン変更, 詐欺, 弁護士</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>S1 エラー・不具合</td>
+<td>ログイン, 真っ白, 419, パスワード, 再生でき, 音が出ない, フリーズ, ロック, 解放, 解除, 招待コード, サポートくん, network error, 表示されない, 見れません, 開けません, 反映されない, バグ, 不具合, エラー, アカウント, メールアドレス変更, 認証コード, 届かない</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>S2 予約</td>
+<td>予約, 面談, 1on1, オリエン, 日程, リスケ, キャンセル, zoom, ズーム, 入室, 参加リンク, 申し込み, 申込, 締切, 何時から, 開催, 参加したい, コンサル, ブートキャンプ, 勉強会, 合宿</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>S4 資料の場所</td>
+<td>アーカイブ, 録画, 見逃し, 保管庫, 資料, 教材, どこで見, どこから見, 場所, 特典, ワークシート, 提出, ダウンロード, どこにあり, どこですか, 視聴, オープンチャット, オプチャ, リッチメニュー, リンク教え</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td>G2 講義の内容</td>
+<td>claude, クロード, cursor, codex, api, mcp, dify, n8n, gas, python, github, chatgpt, gpt, gemini, canva, notion, チャットボット, ai社員, エージェント, プロンプト, 自動化, 画像生成, 動画生成, html, コード, 動きません, 動かない, 実行できない, インストール, デプロイ</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td>G4 案件</td>
+<td>案件, 受注, 納品, クライアント, お客様, 見積, 提案, 営業, 応募, マネタイズ, 稼げ, 稼ぐ, 収益, 報酬, 単価, クラウドワークス, ココナラ, ランサーズ, スカウト, sns運用, 集客</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td>G1 進め方</td>
+<td>何から, どう進め, 進め方, 順番, ペース, 方向性, 迷って, 相談したい, どのコース, コース選, 最初に, カリキュラム, ロードマップ, ゴール設定, 目標設定, 次は何, 再開, 復帰, モチベ, 挫折</td>
+</tr>
+<tr>
+<td style="text-align: right;">－</td>
+<td>判定不能</td>
+<td>上記いずれにも当たらない → E0-020</td>
+</tr>
+</tbody>
+</table>
+<h2>UI実装への申し送り</h2>
+<ul>
+<li>学習系（G1〜G4）に入るときだけ、各相談の冒頭で「今この『○○（今のアクション）』の話だよね？」確認が入る（各相談ファイル参照）。サービス系・その他は用件から直入り。</li>
+<li>「今のアクション」名は受講生の現在の進行アクションをシステムから取得して埋め込む想定〔要確認: 取得可否〕。</li>
+</ul></main>
+</div></body></html>

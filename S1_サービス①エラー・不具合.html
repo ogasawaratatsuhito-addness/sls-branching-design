@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🛠️ S1 サービス① エラー ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html" class="active">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ 🛠️ サービス① うまく動かない・エラーが出る（S1）</h1>
+<blockquote>
+<p><strong>パイロット第1号</strong>（この型でOKなら残り8相談へ展開）。共通仕様=<code>00_共通仕様.md</code> ／ 体験像の正本=v9<br />
+根拠データ: 実質問363件（8束）。一次対応で自己解決を狙える唯一のサービス系＝分岐が最も豊富。</p>
+</blockquote>
+<h2>この相談の設計方針（v9より）</h2>
+<ul>
+<li>学習系ではないので「今この○○」確認は<strong>なし</strong>。「どの画面で、何が起きてる？」から入る。</li>
+<li>よくあるトラブルは<strong>その場で解決策を案内</strong>（一次対応集）→ 解決したら学習に戻す。</li>
+<li>解決しなければ <strong>①症状→②スクショ（必須）→③端末→④ブラウザ</strong> を一問ずつ聞いて、整えてサポートへ。</li>
+</ul>
+<hr />
+<h2>フロー全体図</h2>
+<p><div class="mermaid">flowchart TD
+    A[S1-000 入口<br>どの画面で何が起きてる?] -->|ボタン: 症状1-7| B[S1-1x1 各症状の一次対応]
+    A -->|ボタン: どれでもない| E[S1-300 聞き取り開始]
+    A -->|自由入力| K[S1-010 キーワード判定]
+    K -->|判定OK| KC[S1-011 もしかして◯◯かな?と確認]
+    KC -->|はい| B
+    KC -->|ちがう| E
+    K -->|判定不能| E
+    B --> C{S1-200 これで直った?}
+    C -->|直った!| D[S1-210 送り出し] --> Z1[END]
+    C -->|まだダメ| E
+    E --> F[S1-301 スクショ添付 必須]
+    F --> G[S1-302 端末を選ぶ]
+    G --> H[S1-303 ブラウザを選ぶ]
+    H --> I[S1-400 HANDOFF サポートへ]
+    I --> J[S1-401 24時間以内に返事くるよ] --> Z2[END]
+</div></p>
+<hr />
+<h2>ノード定義</h2>
+<h3>入口</h3>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1-000</td>
+<td>CHOICE</td>
+<td>あらら、うまく動かないんだね💦 いま何が起きてるか、近いものを選んでね👇（自由に書いてもOKだよ）<br>1️⃣ コースがロックされてる・解放できない<br>2️⃣ ログインできない・画面が真っ白<br>3️⃣ 動画が見れない・音が出ない<br>4️⃣ なんでもサポートくんが動かない<br>5️⃣ 表示がおかしい・前と変わった・消えた<br>6️⃣ LINEの友だち追加ができない<br>7️⃣ メール・通知・アカウントのこと<br>8️⃣ どれでもない</td>
+<td>1→S1-111 ／ 2→S1-121 ／ 3→S1-131 ／ 4→S1-141 ／ 5→S1-151 ／ 6→S1-161 ／ 7→S1-300 ／ 8→S1-300 ／ 自由入力→S1-010</td>
+</tr>
+<tr>
+<td>S1-010</td>
+<td>INPUT</td>
+<td>（内部）自由入力をキーワード判定（下の判定表）</td>
+<td>判定OK→S1-011 ／ 判定不能→S1-300</td>
+</tr>
+<tr>
+<td>S1-011</td>
+<td>CHOICE</td>
+<td>もしかして「◯◯（判定された症状）」のことかな？<br>1️⃣ そう！ 2️⃣ ちがう</td>
+<td>1→該当の一次対応 ／ 2→S1-300</td>
+</tr>
+</tbody>
+</table>
+<h3>一次対応（束ごとの確定文言）</h3>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>束</th>
+<th>種別</th>
+<th>文言</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1-111</td>
+<td>コース解放・ロック解除（123件）</td>
+<td>MSG</td>
+<td>ロックは「コースがまだ追加されてない」だけの状態だよ。下の『全コース一括解放リンク』から解放できるから試してみてね！<br>▼全コース一括解放リンク：〔要確認: 最新URL・恒久リダイレクト推奨〕</td>
+<td>→S1-200</td>
+</tr>
+<tr>
+<td>S1-121</td>
+<td>ログイン不可/白画面/PW（82件）</td>
+<td>MSG</td>
+<td>ログインできない時は、ログイン画面の「パスワードを忘れた方はこちら」から再設定してみてね。<br>画面が真っ白・419エラー・先に進めない時は、受講生サイトのページを一回ぜんぶ閉じてから入り直してみて（ブラウザのcookie/キャッシュ削除も効くよ）💡</td>
+<td>→S1-200</td>
+</tr>
+<tr>
+<td>S1-131</td>
+<td>動画再生・視聴・音声（67件）</td>
+<td>MSG</td>
+<td>まず①ページを一回ぜんぶ閉じて入り直す（cookie/キャッシュ削除も◎）②端末の音量・ミュートとプレイヤー側の音量③通信環境を変える/別ブラウザで開く、を試してみて。<br>「次に進めない」時は、視聴完了の操作や次の設問ボタンの位置も確認してみてね💡</td>
+<td>→S1-200</td>
+</tr>
+<tr>
+<td>S1-141</td>
+<td>なんでもサポートくん（25件）</td>
+<td>MSG</td>
+<td>順番がずれたら「設問◯から始めて」と番号で指示すると正しい位置に戻るよ。起動しない（network error）時は、一回閉じて開き直すと動くことが多いよ。ゴール設定コースが外れてると使えないから、その時はこのあとサポートに繋ぐね😊</td>
+<td>→S1-200</td>
+</tr>
+<tr>
+<td>S1-151</td>
+<td>表示崩れ・反映・同期（45件）</td>
+<td>MSG</td>
+<td>受講生サイトはアップデートで画面構成が変わることがあるけど、機能は新しい画面に引き継がれてるよ。履歴・進捗が消えたように見える時は、一回ぜんぶ閉じて入り直す/キャッシュ削除して再読み込みを試してみて。</td>
+<td>→S1-200</td>
+</tr>
+<tr>
+<td>S1-161</td>
+<td>LINE友だち追加（17件・昇格束）</td>
+<td>MSG</td>
+<td>友だち追加ができない時は、①追加用リンク/QRをもう一度開く ②LINEアプリを最新版に更新 ③Wi-Fi/モバイルなど通信環境を変える、を試してみてね。海外版のLINEだと参加できないことがあるよ。〔要確認: 各導線の正規URL・QR〕</td>
+<td>→S1-200</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>※「アカウント・メール・通知」（78件）と「どれでもない」は一次対応を持たず S1-300 聞き取り直行（メール変更等は本人確認が要るため人が対応）。</p>
+</blockquote>
+<h3>解決確認 → 送り出し</h3>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1-200</td>
+<td>CHOICE</td>
+<td>試してみてどうかな？<br>1️⃣ 直った！ 2️⃣ まだダメ…</td>
+<td>1→S1-210 ／ 2→S1-300</td>
+</tr>
+<tr>
+<td>S1-210</td>
+<td>MSG</td>
+<td>〔共通仕様§4の送り出しA/B/Cをローテーション表示〕</td>
+<td>→END</td>
+</tr>
+</tbody>
+</table>
+<h3>聞き取り → サポートへ</h3>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1-300</td>
+<td>INPUT</td>
+<td>オッケー、サポートにスムーズに繋ぐために、順番に教えてね（1つずつでOK）👇<br>まず、どんな症状？（何が起きてるか、ひとことでOK）<br>※S1-000でボタン選択済みの場合はこの質問をスキップし、選択した症状を記録</td>
+<td>→S1-301</td>
+</tr>
+<tr>
+<td>S1-301</td>
+<td>ATTACH</td>
+<td>ありがとう！次に、その画面のスクショを送ってね（これは必須📸 サポートが一発で状況をつかめるよ）</td>
+<td>添付→S1-302 ／ 添付できない選択→S1-302（「スクショなし」と記録）</td>
+</tr>
+<tr>
+<td>S1-302</td>
+<td>CHOICE</td>
+<td>使ってる端末はどれ？<br>1️⃣ スマホ（iPhone） 2️⃣ スマホ（Android） 3️⃣ PC（Windows） 4️⃣ PC（Mac） 5️⃣ タブレット</td>
+<td>→S1-303</td>
+</tr>
+<tr>
+<td>S1-303</td>
+<td>CHOICE</td>
+<td>ブラウザはどれ？<br>1️⃣ Chrome 2️⃣ Safari 3️⃣ Edge 4️⃣ その他/わからない</td>
+<td>→S1-400</td>
+</tr>
+<tr>
+<td>S1-400</td>
+<td>HANDOFF</td>
+<td>（内部）翻訳テンプレに整形してサポート（技術窓口）へ送信:<br>【相談内容】症状（束名＋S1-300の回答）<br>【背景・状況】端末/ブラウザ/スクショ添付<br>【してほしいこと】症状の解消<br>【これまでの経緯】案内済みの一次対応（S1-1x1のどれを試して直らなかったか）</td>
+<td>→S1-401</td>
+</tr>
+<tr>
+<td>S1-401</td>
+<td>MSG</td>
+<td>ぜんぶ整えてサポートに渡したよ！<strong>24時間以内に返事くるからね😊</strong> それまで、できるところから学習を進めてて大丈夫だよ✨</td>
+<td>→END</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>自由入力のキーワード判定表（S1-010用）</h2>
+<blockquote>
+<p>根拠: <code>../菅さん共有_質問データ.csv</code> の束S1-01〜S1-08（363件）の実際の言い回し。上の束から順に判定（先勝ち）。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>判定先</th>
+<th>キーワード（部分一致・小文字化して判定）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1-111 ロック/解放</td>
+<td>ロック, 解放, 解除, 招待コード, 鍵, 受講できません, 非公開, コースが無く, 講座が無く</td>
+</tr>
+<tr>
+<td>S1-121 ログイン/白画面</td>
+<td>ログイン, 真っ白, 白画面, 419, 404, パスワード, pw, 入れません, 入れない, 先に進め</td>
+</tr>
+<tr>
+<td>S1-131 動画/音声</td>
+<td>動画, 再生, 音が出ない, 音声, 視聴でき, 見れません, 見られません, 止ま</td>
+</tr>
+<tr>
+<td>S1-141 サポートくん</td>
+<td>サポートくん, network error, ネットワークエラー</td>
+</tr>
+<tr>
+<td>S1-151 表示/反映</td>
+<td>表示, 反映, 同期, 消え, 変わっ, 崩れ</td>
+</tr>
+<tr>
+<td>S1-161 LINE導線</td>
+<td>友だち追加, 友達追加, ライン登録, line登録, line追加</td>
+</tr>
+<tr>
+<td>S1-300 直行（メール/アカウント）</td>
+<td>メールアドレス, メアド, 認証コード, 届かない, 届きません, 通知, アカウント, 凍結</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>〔要確認〕（実装前に運営裏取り）</h2>
+<ol>
+<li>全コース一括解放リンクの最新URL（S1-111。恒久リダイレクトにすれば文言が不変になる）</li>
+<li>LINE友だち追加の正規URL・QR（S1-161）</li>
+</ol>
+<h2>UI実装への申し送り（菅さん向け）</h2>
+<ul>
+<li>S1-301のスクショは<strong>必須</strong>だが、添付できない人向けに「添付できない」ボタンの逃げ道を用意（記録に「スクショなし」を残す）。</li>
+<li>あったら最高（v9）: スクショ画像から端末・ブラウザを自動判別できるなら S1-302/S1-303 をスキップ可。</li>
+<li>S1-400の送信先=サポート（公式サポートLINE想定・別アプリ）。受講生がコピペで貼る形になる場合、S1-401の文言は「この内容をサポートLINEに貼ってね」形に差し替えが必要（→小澤さんに導線を確認）。</li>
+</ul>
+<h2>根拠データ（束・件数）</h2>
+<table>
+<thead>
+<tr>
+<th>束ID</th>
+<th>束</th>
+<th style="text-align: right;">件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1-01</td>
+<td>コース解放・ロック解除</td>
+<td style="text-align: right;">115</td>
+</tr>
+<tr>
+<td>S1-02</td>
+<td>ログイン不可/白画面/PW</td>
+<td style="text-align: right;">82</td>
+</tr>
+<tr>
+<td>S1-03</td>
+<td>アカウント・メール・通知</td>
+<td style="text-align: right;">49</td>
+</tr>
+<tr>
+<td>S1-04</td>
+<td>動画再生・視聴・音声</td>
+<td style="text-align: right;">41</td>
+</tr>
+<tr>
+<td>S1-05</td>
+<td>束外（共通フロー）</td>
+<td style="text-align: right;">24</td>
+</tr>
+<tr>
+<td>S1-06</td>
+<td>なんでもサポートくん</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr>
+<td>S1-07</td>
+<td>LINE友だち追加</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr>
+<td>S1-08</td>
+<td>表示崩れ・反映・同期</td>
+<td style="text-align: right;">11</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>

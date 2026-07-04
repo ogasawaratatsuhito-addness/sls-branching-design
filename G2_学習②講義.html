@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📘 G2 学習② 講義 ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html" class="active">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ 📘 学習② 講義の内容で分からない（G2）</h1>
+<blockquote>
+<p>共通仕様=<code>00_共通仕様.md</code> ／ 体験像の正本=v9<br />
+根拠データ: 実質問311件（7束）。最多はClaude Code/Cursor/Codex系164件。</p>
+</blockquote>
+<h2>この相談の設計方針（v9より）</h2>
+<ul>
+<li>「今この『○○』の話だよね？ どこが分からない？」の確認から始まる。</li>
+<li>講義の中身を踏まえて答える → 解決確認 → まだなら<strong>一度だけ粘る</strong>（「もしかして、こういうこと？」）→ ダメなら整えて<strong>講師</strong>へ。</li>
+<li>⚠️ <strong>LLMなし実装での論点</strong>: 「その人のレベルでかみ砕いて答える」は条件分岐だけでは全再現できない。本設計は<strong>回答スロット方式</strong>にする——束（ツール別）ごとに「よくある詰まりの定型回答」を持てる枠を用意し、<strong>どこまで定型回答を積むかは運用で増やせる</strong>構造。定型に当たらないものは粘りをスキップして講師へ直行。</li>
+</ul>
+<h2>フロー全体図</h2>
+<p><div class="mermaid">flowchart TD
+    A[G2-000 今この○○の話だよね?] -->|そう| B[G2-100 どこが分からない?]
+    A -->|ちがう| E0[E0-020 メニューへ]
+    B -->|ボタン: ツール/テーマ選択| C[G2-11x 束別の定型回答スロット]
+    B -->|定型に無い/自由入力| F
+    C --> D{G2-200 解決した?}
+    D -->|解決!| S[G2-210 送り出し] --> Z1[END]
+    D -->|まだ| P[G2-201 もしかしてこういうこと? 一度だけ粘る]
+    P --> D2{G2-202 どう?}
+    D2 -->|解決!| S
+    D2 -->|まだ| F[G2-300 聞き取り ①何をしたい ②どこで詰まってる]
+    F --> H[G2-400 HANDOFF 講師へ] --> I[G2-401 24時間以内] --> Z2[END]
+</div></p>
+<h2>ノード定義</h2>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G2-000</td>
+<td>CHOICE</td>
+<td>今この「<strong>○○</strong>（いま取り組んでるアクション）」の話だよね？😊<br>1️⃣ そう！ 2️⃣ ちがう話</td>
+<td>1→G2-100 ／ 2→E0-020</td>
+</tr>
+<tr>
+<td>G2-100</td>
+<td>CHOICE</td>
+<td>どこが分からない？近いものを選ぶか、そのまま書いてね👇<br>1️⃣ Claude Code / Cursor / Codex<br>2️⃣ Dify・チャットボット・AIエージェント<br>3️⃣ ChatGPT / Gemini / Canva などのツール<br>4️⃣ API・MCP・連携（GAS/GitHubなど）<br>5️⃣ プロンプト・操作・考え方<br>6️⃣ その他</td>
+<td>1→G2-111 ／ 2→G2-112 ／ 3→G2-113 ／ 4→G2-114 ／ 5→G2-115 ／ 6→G2-300 ／ 自由入力→G2-110</td>
+</tr>
+<tr>
+<td>G2-110</td>
+<td>INPUT</td>
+<td>（内部）自由入力をキーワード判定（下表）。定型スロットに当たれば提示、当たらなければ聞き取りへ</td>
+<td>判定OK→該当スロット ／ 不能→G2-300</td>
+</tr>
+<tr>
+<td>G2-111〜115</td>
+<td>MSG</td>
+<td><strong>定型回答スロット（束別）</strong>: 各テーマの「よくある詰まり→解決手順」の定型回答を提示。<br>〔要確認: 初期リリースに積む定型回答の中身。候補＝質問データG2束311件から頻出の詰まりを抽出して作成。ゼロ本スタート（全て講師直行）でも構造は成立〕</td>
+<td>→G2-200</td>
+</tr>
+<tr>
+<td>G2-200</td>
+<td>CHOICE</td>
+<td>これで解決した？<br>1️⃣ 解決した！ 2️⃣ まだ分からない…</td>
+<td>1→G2-210 ／ 2→G2-201</td>
+</tr>
+<tr>
+<td>G2-201</td>
+<td>MSG</td>
+<td>もしかして、<strong>こういうこと？</strong>（同じ定型回答の別の角度・関連する詰まりを1回だけ提示）<br>〔要確認: 各スロットの「粘り」用の第2候補。無い場合はこのノードをスキップしG2-300へ〕</td>
+<td>→G2-202</td>
+</tr>
+<tr>
+<td>G2-202</td>
+<td>CHOICE</td>
+<td>どうかな？<br>1️⃣ 解決した！ 2️⃣ まだ…</td>
+<td>1→G2-210 ／ 2→G2-300</td>
+</tr>
+<tr>
+<td>G2-210</td>
+<td>MSG</td>
+<td>〔共通仕様§4の送り出しA/B/Cをローテーション〕</td>
+<td>→END</td>
+</tr>
+<tr>
+<td>G2-300</td>
+<td>INPUT</td>
+<td>オッケー、ここは講師に繋ぐのがいちばん早いね！<br>「<strong>①何をしたいか ②どこで詰まってるか</strong>」だけ教えてくれたら、こっちで整えて講師に送っておくよ（書き直さなくてOK）</td>
+<td>①→②の2問→G2-400</td>
+</tr>
+<tr>
+<td>G2-400</td>
+<td>HANDOFF</td>
+<td>（内部）翻訳テンプレに整形して<strong>講師</strong>へ:<br>【相談内容】講義内容の質問（テーマ=選択された束）<br>【背景・状況】今のアクション名＋②どこで詰まってる<br>【してほしいこと】①何をしたい<br>【これまでの経緯】提示済みの定型回答と結果</td>
+<td>→G2-401</td>
+</tr>
+<tr>
+<td>G2-401</td>
+<td>MSG</td>
+<td>講師に送っておいたよ！<strong>24時間以内に返事くるからね😊</strong> それまで進められるところ、あれば進めてて大丈夫だよ✨</td>
+<td>→END</td>
+</tr>
+</tbody>
+</table>
+<h2>自由入力のキーワード判定表（G2-110用）</h2>
+<table>
+<thead>
+<tr>
+<th>判定先</th>
+<th>キーワード</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G2-111 Claude Code等</td>
+<td>claude, クロード, cursor, カーソル, codex</td>
+</tr>
+<tr>
+<td>G2-112 Dify/エージェント</td>
+<td>dify, チャットボット, ai社員, エージェント, n8n, bubble</td>
+</tr>
+<tr>
+<td>G2-113 ChatGPT等ツール</td>
+<td>chatgpt, gpt, gemini, canva, notion</td>
+</tr>
+<tr>
+<td>G2-114 API/連携</td>
+<td>api, mcp, 連携, gas, github, harness</td>
+</tr>
+<tr>
+<td>G2-115 プロンプト/操作</td>
+<td>プロンプト, 変数, 関数, スプレッドシート, インストール, デプロイ, ナレッジ</td>
+</tr>
+<tr>
+<td>G2-300 直行</td>
+<td>上記に当たらない技術ワード（html, コード, 動かない, エラー 等）</td>
+</tr>
+</tbody>
+</table>
+<h2>〔要確認〕</h2>
+<ol>
+<li><strong>定型回答スロットの初期搭載数</strong>: ゼロ本（全て講師直行）で始めるか、頻出（Claude Codeインストール詰まり等）を数本積んで始めるか。質問データから定型化候補は抽出可能</li>
+<li>「今のアクション」の講義データ（文字起こし・教材）参照は将来のAI化前提。LLMなし版では使わない（v9の理想として申し送りのみ）</li>
+<li>講義質問のログ保存運用（旧・講師質問はログが残る運用だった）</li>
+</ol>
+<h2>UI実装への申し送り（菅さん向け）</h2>
+<ul>
+<li>G2-111〜115は<strong>回答スロット＝コンテンツ差し替え可能な枠</strong>として実装してほしい（定型回答は運用で追加・更新していく）。</li>
+<li>講師へのHANDOFFはSLS内ワンタップが理想（v9）。難しければ整形済みテキストを受講生が貼る形でもOK。</li>
+</ul>
+<h2>根拠データ（束・件数）</h2>
+<table>
+<thead>
+<tr>
+<th>束ID</th>
+<th>束</th>
+<th style="text-align: right;">件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G2-01</td>
+<td>Claude Code/Cursor/Codex</td>
+<td style="text-align: right;">164</td>
+</tr>
+<tr>
+<td>G2-02</td>
+<td>束外（共通フロー）</td>
+<td style="text-align: right;">48</td>
+</tr>
+<tr>
+<td>G2-03</td>
+<td>Dify/チャットボット/エージェント/n8n</td>
+<td style="text-align: right;">31</td>
+</tr>
+<tr>
+<td>G2-04</td>
+<td>ChatGPT/Gemini/Canva等ツール</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr>
+<td>G2-05</td>
+<td>API/MCP/連携/GAS/GitHub</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr>
+<td>G2-06</td>
+<td>プロンプト/操作・概念</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>G2-07</td>
+<td>技術エラー(動かない/実行できない)</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>

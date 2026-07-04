@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🧭 G1 学習① 進め方 ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html" class="active">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ 🧭 学習① これからの進め方を相談したい（G1）</h1>
+<blockquote>
+<p>共通仕様=<code>00_共通仕様.md</code> ／ 体験像の正本=v9<br />
+根拠データ: 実質問163件（6束）。10問診断→次の1コース提示→3択、がv9で確定済みの体験。</p>
+</blockquote>
+<h2>この相談の設計方針（v9より）</h2>
+<ul>
+<li>10問を<strong>1問ずつ</strong>やさしく聞く → 答えをもとに「今のあなたに合う次の1コース」を<strong>1つ</strong>提示 → 「このコースで進む？」の3択。</li>
+<li>どのコースを出すかの<strong>分岐ルールは確定済み</strong>（2026-05-30 かいてぃ&amp;たつ）→ 本設計では再定義せず正本を参照する。</li>
+<li>不安・相談したい場合のみサポートへ（学習系だが「方向性の不安」は中身相談でないためサポート行き）。</li>
+</ul>
+<h2>フロー全体図</h2>
+<p><div class="mermaid">flowchart TD
+    A[G1-000 入口] --> Q[G1-101〜110 10問診断を1問ずつ]
+    Q --> P[G1-200 コース1つを提示]
+    P --> C{G1-201 このコースで進む?}
+    C -->|進む| D[G1-210 コース追加リンク→最初のアクションへ送り出し] --> Z1[END]
+    C -->|もう一度答える| Q
+    C -->|不安/相談したい| E[G1-300 聞き取り] --> F[G1-400 HANDOFF サポート] --> G[G1-401 24時間以内] --> Z2[END]
+</div></p>
+<h2>ノード定義</h2>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1-000</td>
+<td>MSG</td>
+<td>進め方の相談だね、一緒に整理しよう😊<br>今のあなたにいちばん合う「次の1コース」を見つけたいから、かんたんな質問を10問、1つずつ聞いていくね。サクッと答えてくれればOKだよ💡</td>
+<td>→G1-101</td>
+</tr>
+<tr>
+<td>G1-101〜110</td>
+<td>INPUT/CHOICE</td>
+<td>10問診断を1問ずつ: ①呼び方 ②職業 ③変えたいこと ④動機 ⑤興味のある分野 ⑥ビジネス経験 ⑦AI経験 ⑧PCの有無 ⑨使える時間 ⑩〔確定済み正本を参照〕<br>※各問の文言・選択肢・コース判定ロジック＝<strong>2026-05-30確定の分岐ルール正本</strong>をそのまま使う〔要確認: 正本ドキュメントをこのフォルダに取り込む〕</td>
+<td>順に次の問→G1-200</td>
+</tr>
+<tr>
+<td>G1-200</td>
+<td>MSG</td>
+<td>ありがとう！今のあなたには、まず「<strong>○○コース</strong>」がおすすめ✨（○○＝判定ロジックの出力）</td>
+<td>→G1-201</td>
+</tr>
+<tr>
+<td>G1-201</td>
+<td>CHOICE</td>
+<td>このコースで進んでみる？<br>1️⃣ 進む！ 2️⃣ もう一回答え直す 3️⃣ ちょっと不安／相談したい</td>
+<td>1→G1-210 ／ 2→G1-101 ／ 3→G1-300</td>
+</tr>
+<tr>
+<td>G1-210</td>
+<td>MSG</td>
+<td>よし、いこう！🎉 下のリンクから「○○コース」を追加してね👇<br>▼コース追加リンク：〔要確認: コース追加導線のURL/操作〕<br>追加できたら、最初のアクションから一緒に進めよう✨</td>
+<td>→END</td>
+</tr>
+<tr>
+<td>G1-300</td>
+<td>INPUT</td>
+<td>不安なこと、そのまま教えてね。ぜんぶ整えてサポートに伝えるから、うまくまとまってなくて大丈夫だよ😊</td>
+<td>→G1-400</td>
+</tr>
+<tr>
+<td>G1-400</td>
+<td>HANDOFF</td>
+<td>（内部）翻訳テンプレに整形してサポートへ:<br>【相談内容】進め方・方向性の相談（診断結果=○○コース提示済み）<br>【背景・状況】10問の回答内容<br>【してほしいこと】G1-300の入力<br>【これまでの経緯】診断→○○コース提示→不安あり</td>
+<td>→G1-401</td>
+</tr>
+<tr>
+<td>G1-401</td>
+<td>MSG</td>
+<td>サポートに送っておいたよ！<strong>24時間以内に返事くるからね😊</strong></td>
+<td>→END</td>
+</tr>
+</tbody>
+</table>
+<h2>リピート対応（v9残課題）</h2>
+<ul>
+<li><strong>2回目以降に来た人</strong>: 終えたコースは提示しない／進行中コースを優先。判定ロジック側の要件として申し送り〔要確認: 受講履歴の取得可否〕。</li>
+<li>診断を2回した人の前回回答の扱い（引き継ぐ/毎回リセット）→ UI実装判断でOK。</li>
+</ul>
+<h2>自由入力のキーワード判定（E0からの流入用）</h2>
+<p>何から, どう進め, 進め方, 順番, ペース, 方向性, 迷って, 相談したい, どのコース, コース選, 最初に, カリキュラム, ロードマップ, ゴール設定, 目標設定, 次は何, 再開, 復帰, モチベ, 挫折</p>
+<h2>〔要確認〕</h2>
+<ol>
+<li>10問の文言・選択肢・コース判定ロジックの正本（2026-05-30 かいてぃ&amp;たつ確定）をこのフォルダに取り込む</li>
+<li>コース追加導線のURL/操作</li>
+<li>受講履歴の取得可否（2回目以降の提示制御）</li>
+</ol>
+<h2>根拠データ（束・件数）</h2>
+<table>
+<thead>
+<tr>
+<th>束ID</th>
+<th>束</th>
+<th style="text-align: right;">件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1-01</td>
+<td>どのコース/再開/プラン</td>
+<td style="text-align: right;">85</td>
+</tr>
+<tr>
+<td>G1-02</td>
+<td>ゴール設定・目標設定</td>
+<td style="text-align: right;">27</td>
+</tr>
+<tr>
+<td>G1-03</td>
+<td>進め方・ペース・カリキュラム</td>
+<td style="text-align: right;">24</td>
+</tr>
+<tr>
+<td>G1-04</td>
+<td>方向性・迷い・相談</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr>
+<td>G1-05</td>
+<td>束外（共通フロー）</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td>G1-06</td>
+<td>何から始める/順番</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>

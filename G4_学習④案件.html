@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>💼 G4 学習④ 案件 ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html" class="active">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ 💼 学習④ 案件・お客様対応の相談（G4）</h1>
+<blockquote>
+<p>共通仕様=<code>00_共通仕様.md</code> ／ 体験像の正本=v9<br />
+根拠データ: 実質問309件（5束）。最多は案件の探し方・応募・媒体169件。</p>
+</blockquote>
+<h2>この相談の設計方針（v9より）</h2>
+<ul>
+<li>「今この『○○』の話だよね？ どうした？」から始まる。</li>
+<li>一般的に答えられることはその場で答える → 解決確認 → まだなら一度粘る → ダメなら整えて<strong>講師</strong>へ。</li>
+<li>G2と同じ<strong>回答スロット方式</strong>: 束ごとに定型回答の枠を持ち、積む量は運用で増やす。個別性の高い相談（具体的な単価交渉・クライアントトラブル等）は最初から講師直行。</li>
+</ul>
+<h2>フロー全体図</h2>
+<p><div class="mermaid">flowchart TD
+    A[G4-000 今この○○の話だよね?] -->|そう| B[G4-100 どうした? テーマ選択]
+    A -->|ちがう| E0[E0-020 メニューへ]
+    B -->|一般論スロットあり| C[G4-11x 定型回答スロット]
+    B -->|個別具体/その他| F
+    C --> D{G4-200 解決した?}
+    D -->|解決!| S[G4-210 送り出し] --> Z1[END]
+    D -->|まだ| P[G4-201 一度だけ粘る] --> D2{G4-202 どう?}
+    D2 -->|解決!| S
+    D2 -->|まだ| F[G4-300 聞き取り]
+    F --> H[G4-400 HANDOFF 講師へ] --> I[G4-401 24時間以内] --> Z2[END]
+</div></p>
+<h2>ノード定義</h2>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G4-000</td>
+<td>CHOICE</td>
+<td>今この「<strong>○○</strong>（いま取り組んでるアクション）」の話だよね？😊<br>1️⃣ そう！ 2️⃣ ちがう話</td>
+<td>1→G4-100 ／ 2→E0-020</td>
+</tr>
+<tr>
+<td>G4-100</td>
+<td>CHOICE</td>
+<td>どうした？くわしく教えて😊 近いものを選んでもOKだよ👇<br>1️⃣ 案件の探し方・応募のしかた（媒体選びなど）<br>2️⃣ 収益化・マネタイズ・集客の考え方<br>3️⃣ 単価・見積・提案のしかた<br>4️⃣ クライアント対応・納品で困ってる<br>5️⃣ その他</td>
+<td>1→G4-111 ／ 2→G4-112 ／ 3→G4-113 ／ 4→G4-300 ／ 5→G4-300 ／ 自由入力→G4-110</td>
+</tr>
+<tr>
+<td>G4-110</td>
+<td>INPUT</td>
+<td>（内部）自由入力をキーワード判定（下表）</td>
+<td>判定OK→該当スロット ／ 不能→G4-300</td>
+</tr>
+<tr>
+<td>G4-111〜113</td>
+<td>MSG</td>
+<td><strong>定型回答スロット（束別）</strong>: 一般論で答えられる定型回答を提示。<br>〔要確認: 初期搭載の定型回答。候補＝質問データG4束309件の頻出（クラウドワークスの探し方・応募の基本、収益化の考え方 等）から作成〕</td>
+<td>→G4-200</td>
+</tr>
+<tr>
+<td>G4-200</td>
+<td>CHOICE</td>
+<td>これで解決した？<br>1️⃣ 解決した！ 2️⃣ まだ…</td>
+<td>1→G4-210 ／ 2→G4-201</td>
+</tr>
+<tr>
+<td>G4-201</td>
+<td>MSG</td>
+<td>もしかして、<strong>こういうこと？</strong>（別角度の定型を1回だけ提示。無ければスキップしG4-300へ）</td>
+<td>→G4-202</td>
+</tr>
+<tr>
+<td>G4-202</td>
+<td>CHOICE</td>
+<td>どうかな？<br>1️⃣ 解決した！ 2️⃣ まだ…</td>
+<td>1→G4-210 ／ 2→G4-300</td>
+</tr>
+<tr>
+<td>G4-210</td>
+<td>MSG</td>
+<td>〔共通仕様§4の送り出しA/B/Cをローテーション〕</td>
+<td>→END</td>
+</tr>
+<tr>
+<td>G4-300</td>
+<td>INPUT</td>
+<td>オッケー、ここは講師に聞くのがいちばい早いね！状況を教えて👇（1つずつでOK）<br>①いまどんな状況？（案件の内容・相手・経緯など）<br>②どうしたい？（何に困ってて、何を決めたい？）</td>
+<td>①→②→G4-400</td>
+</tr>
+<tr>
+<td>G4-400</td>
+<td>HANDOFF</td>
+<td>（内部）翻訳テンプレに整形して<strong>講師（アクション担当）</strong>へ:<br>【相談内容】案件・お客様対応の相談（テーマ=選択された束）<br>【背景・状況】①の回答＋今のアクション名<br>【してほしいこと】②の回答<br>【これまでの経緯】提示済みの定型回答と結果</td>
+<td>→G4-401</td>
+</tr>
+<tr>
+<td>G4-401</td>
+<td>MSG</td>
+<td>講師に送っておいたよ！<strong>24時間以内に返事くるからね😊</strong> 案件、いい流れになるといいね✨</td>
+<td>→END</td>
+</tr>
+</tbody>
+</table>
+<h2>自由入力のキーワード判定表（G4-110用）</h2>
+<table>
+<thead>
+<tr>
+<th>判定先</th>
+<th>キーワード</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G4-111 探し方・応募</td>
+<td>案件, 応募, エントリー, スカウト, クラウドワークス, ココナラ, ランサーズ, 複業クラウド, wantedly</td>
+</tr>
+<tr>
+<td>G4-112 マネタイズ・集客</td>
+<td>マネタイズ, 稼, 収益, 売上, 集客, sns運用, 運用</td>
+</tr>
+<tr>
+<td>G4-113 単価・見積・提案</td>
+<td>見積, 提案, 単価, 報酬</td>
+</tr>
+<tr>
+<td>G4-300 直行</td>
+<td>クライアント, お客様, 納品, 受注, トラブル（個別性が高いため人へ）</td>
+</tr>
+</tbody>
+</table>
+<h2>〔要確認〕</h2>
+<ol>
+<li>定型回答スロットの初期搭載数（G2と同じ論点）</li>
+<li>個別性が高い案件相談の<strong>面談導線</strong>: 講師繋ぎで完結か、1on1予約へ誘導するか（v9確認点③）</li>
+</ol>
+<h2>UI実装への申し送り（菅さん向け）</h2>
+<ul>
+<li>G4-111〜113はG2と同じ<strong>回答スロット＝差し替え可能な枠</strong>として実装。</li>
+<li>クライアント対応・納品（G4-100の4️⃣）は定型で答えると事故りやすいので、<strong>最初から講師直行</strong>にしてある。</li>
+</ul>
+<h2>根拠データ（束・件数）</h2>
+<table>
+<thead>
+<tr>
+<th>束ID</th>
+<th>束</th>
+<th style="text-align: right;">件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G4-01</td>
+<td>案件の探し方・応募・媒体</td>
+<td style="text-align: right;">169</td>
+</tr>
+<tr>
+<td>G4-02</td>
+<td>マネタイズ・収益・集客</td>
+<td style="text-align: right;">85</td>
+</tr>
+<tr>
+<td>G4-03</td>
+<td>クライアント対応・納品</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td>G4-04</td>
+<td>単価・見積・提案・報酬</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>G4-05</td>
+<td>束外（共通フロー）</td>
+<td style="text-align: right;">17</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>

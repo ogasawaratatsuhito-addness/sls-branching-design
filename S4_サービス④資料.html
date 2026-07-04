@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📂 S4 サービス④ 資料 ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html" class="active">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ 📂 サービス④ 資料・アーカイブ・特典の場所を知りたい（S4）</h1>
+<blockquote>
+<p>共通仕様=<code>00_共通仕様.md</code> ／ 体験像の正本=v9<br />
+根拠データ: 実質問373件（7束）。最多はアーカイブ/録画の場所154件。</p>
+</blockquote>
+<h2>この相談の設計方針（v9より）</h2>
+<ul>
+<li>「今この○○」確認なし。「何を探してる？」から入る。</li>
+<li><strong>v9の大前提: 場所が流動的なので、AIが断定案内せず、正確に答えられる人へ渡す</strong>。</li>
+<li>ただし、アーカイブの場所／公開時期／ワークシート提出の3つは<strong>即答候補</strong>あり（体験は即答が◎）。本設計は<strong>即答→ダメならサポート</strong>の2段構えで書き、即答を有効にするかは確認点⑥の判断で切り替えられる構造にする（即答OFFなら S4-1x1 をスキップして S4-300 直行）。</li>
+</ul>
+<h2>フロー全体図</h2>
+<p><div class="mermaid">flowchart TD
+    A[S4-000 何を探してる?] -->|アーカイブの場所| B1[S4-111 即答スロット]
+    A -->|公開はいつ?| B2[S4-121 即答スロット]
+    A -->|ワークシート提出| B3[S4-131 即答スロット]
+    A -->|教材・コース/特典/オプチャ/その他| F[S4-300 聞き取り]
+    B1 & B2 & B3 --> C{S4-200 見つかった?}
+    C -->|見つかった!| S[S4-210 送り出し] --> Z1[END]
+    C -->|見つからない| F
+    F --> H[S4-400 HANDOFF サポート] --> I[S4-401 24時間以内] --> Z2[END]
+</div></p>
+<h2>ノード定義</h2>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S4-000</td>
+<td>CHOICE</td>
+<td>資料・アーカイブ・特典の場所だね！💡 何を探してるか教えてね👇<br>1️⃣ アーカイブ・録画はどこで見れる？<br>2️⃣ アーカイブ・録画はいつ公開される？<br>3️⃣ ワークシート・課題はどこに出す？<br>4️⃣ 教材・コースの場所<br>5️⃣ 特典の受け取り<br>6️⃣ その他（オープンチャット・リッチメニューなど）</td>
+<td>1→S4-111 ／ 2→S4-121 ／ 3→S4-131 ／ 4,5,6→S4-300</td>
+</tr>
+<tr>
+<td>S4-111</td>
+<td>MSG</td>
+<td><strong>〔即答スロット・確認点⑥でON/OFF〕</strong>受講生サイトの「学習教材」の下の方（アーカイブ一覧）から見れるよ。見当たらなかったら教えてね😊</td>
+<td>→S4-200</td>
+</tr>
+<tr>
+<td>S4-121</td>
+<td>MSG</td>
+<td><strong>〔即答スロット〕</strong>アーカイブは、編集が入る場合で数日〜1週間くらいを目安にアップされるよ。公開後は「学習教材」内のアーカイブ一覧から見れるよ💡</td>
+<td>→S4-200</td>
+</tr>
+<tr>
+<td>S4-131</td>
+<td>MSG</td>
+<td><strong>〔即答スロット〕</strong>スマホは「共有とエクスポート → リンクをコピー」でURLにして送ってね。ファイル直添付はシステム上消えちゃうから、必ずURLで共有してね🙇</td>
+<td>→S4-200</td>
+</tr>
+<tr>
+<td>S4-200</td>
+<td>CHOICE</td>
+<td>解決した？<br>1️⃣ 見つかった！ 2️⃣ 見つからない…</td>
+<td>1→S4-210 ／ 2→S4-300</td>
+</tr>
+<tr>
+<td>S4-210</td>
+<td>MSG</td>
+<td>〔共通仕様§4の送り出しA/B/Cをローテーション〕</td>
+<td>→END</td>
+</tr>
+<tr>
+<td>S4-300</td>
+<td>INPUT</td>
+<td>ここは画面の構成が変わることがあって、断定で案内すると場所がズレちゃうことがあるんだ。いちばん正確に案内できる担当に繋ぐね😊<br>①探してるもの（アーカイブ/教材/資料/特典/提出先 など）<br>②（あれば）コース名・セミナー名</td>
+<td>①→②→S4-400</td>
+</tr>
+<tr>
+<td>S4-400</td>
+<td>HANDOFF</td>
+<td>（内部）翻訳テンプレに整形して<strong>サポート</strong>へ:<br>【相談内容】場所の質問（探しもの=①）<br>【背景・状況】②コース名・セミナー名<br>【してほしいこと】場所・導線の案内<br>【これまでの経緯】即答スロットの案内有無と結果</td>
+<td>→S4-401</td>
+</tr>
+<tr>
+<td>S4-401</td>
+<td>MSG</td>
+<td>整えてサポートに送っておいたよ！<strong>24時間以内に返事くるよ😊</strong></td>
+<td>→END</td>
+</tr>
+</tbody>
+</table>
+<h2>自由入力のキーワード判定表（E0→S4流入後の内部振り分け用）</h2>
+<table>
+<thead>
+<tr>
+<th>判定先</th>
+<th>キーワード</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S4-111 場所</td>
+<td>アーカイブ, 録画, 見逃し, 後から見, 保管庫, 視聴, どこで見, どこから見</td>
+</tr>
+<tr>
+<td>S4-121 時期</td>
+<td>いつ公開, まだ見れ, いつアップ, 公開はいつ</td>
+</tr>
+<tr>
+<td>S4-131 提出</td>
+<td>ワークシート, 提出, 課題, 体験記</td>
+</tr>
+<tr>
+<td>S4-300 直行</td>
+<td>教材, 資料, コースの場所, 特典, オープンチャット, オプチャ, リッチメニュー, どこにあり</td>
+</tr>
+</tbody>
+</table>
+<h2>〔要確認〕</h2>
+<ol>
+<li><strong>即答スロットのON/OFF判断</strong>（v9確認点⑥）: 体験は即答が◎だが、v9の正確性優先ならOFF＝全件サポート。ONにする場合は文言の裏取り（アーカイブ一覧の現行位置）</li>
+<li>教材・コースの場所: 現行コース一覧／追加手順／「公開されていません」時の対処</li>
+<li>特典の受け取り導線（別タスクで整備中）</li>
+</ol>
+<h2>UI実装への申し送り（菅さん向け）</h2>
+<ul>
+<li>S4-111/121/131は<strong>ON/OFFフラグ付きの即答スロット</strong>として実装してほしい（運営判断で切り替え・文言差し替えができる形）。</li>
+<li>場所系の文言は画面改修のたびにズレるリスクがあるので、<strong>文言をコード埋め込みにせず管理画面等で更新できる</strong>と安全。</li>
+</ul>
+<h2>根拠データ（束・件数）</h2>
+<table>
+<thead>
+<tr>
+<th>束ID</th>
+<th>束</th>
+<th style="text-align: right;">件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S4-01</td>
+<td>アーカイブ/録画の場所・視聴</td>
+<td style="text-align: right;">154</td>
+</tr>
+<tr>
+<td>S4-02</td>
+<td>教材・資料・コースの場所</td>
+<td style="text-align: right;">69</td>
+</tr>
+<tr>
+<td>S4-03</td>
+<td>ワークシート・課題の提出</td>
+<td style="text-align: right;">65</td>
+</tr>
+<tr>
+<td>S4-04</td>
+<td>アーカイブ・録画の公開時期</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr>
+<td>S4-05</td>
+<td>特典の受け取り</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr>
+<td>S4-06</td>
+<td>オープンチャット・リッチメニュー</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr>
+<td>S4-07</td>
+<td>束外（共通フロー）</td>
+<td style="text-align: right;">8</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>

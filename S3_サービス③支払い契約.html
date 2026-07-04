@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>💳 S3 サービス③ 支払い ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html" class="active">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ 💳 サービス③ お支払い・ご契約について（S3）</h1>
+<blockquote>
+<p>共通仕様=<code>00_共通仕様.md</code> ／ 体験像の正本=v9<br />
+根拠データ: 実質問666件（9束）。最多は解約・退会・休会・返金334件。</p>
+</blockquote>
+<h2>この相談の設計方針（v9より）</h2>
+<ul>
+<li><strong>大前提: 金額・契約・解約の中身にAIが踏み込まない・断定しない・即答しない</strong>（答えると事故）。どんな相談かだけ聞いて、整えて<strong>サポート（必ず人）</strong>へ。</li>
+<li><strong>解約の気配がある時はとくに丁寧に</strong>。トンマナはこの相談だけ人格そのまま少し丁寧め（謝意・寄り添い）。</li>
+<li>全束HANDOFF。違いは「入口の受け止め文言」と「集める情報」だけ。</li>
+</ul>
+<h2>フロー全体図</h2>
+<p><div class="mermaid">flowchart TD
+    A[S3-000 どんなご相談?] -->|1 解約・退会・返金| B1[S3-110 とくに丁寧な受け止め]
+    A -->|2 不信・クレーム| B2[S3-120 最優先の受け止め]
+    A -->|3 引き落とし・支払いトラブル| B3[S3-130 明細の聞き取り]
+    A -->|4 登録情報の変更| B4[S3-140 変更内容の聞き取り]
+    A -->|5 料金・契約・期間・その他| B5[S3-150 一般の聞き取り]
+    B1 & B2 & B3 & B4 & B5 --> H[S3-400 HANDOFF サポート 必ず人]
+    H --> I[S3-401 24時間以内にお返事] --> Z[END]
+</div></p>
+<h2>ノード定義</h2>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S3-000</td>
+<td>CHOICE</td>
+<td>お支払い・ご契約のことだね。正確にお伝えしたいから、ここは担当者からきちんとご案内するね🙇 どんなご相談か、近いものを選んでね👇<br>1️⃣ 解約・退会・返金について<br>2️⃣ 不安なこと・気になることがある<br>3️⃣ 引き落とし・支払いがうまくいかない<br>4️⃣ 登録情報（メール/住所/氏名/電話）の変更<br>5️⃣ 料金・契約内容・受講期間・その他</td>
+<td>1→S3-110 ／ 2→S3-120 ／ 3→S3-130 ／ 4→S3-140 ／ 5→S3-150</td>
+</tr>
+<tr>
+<td>S3-110</td>
+<td>INPUT</td>
+<td>ご相談ありがとう。不安にさせていたらごめんね。ここは正確にお伝えしたいから、担当者にしっかり繋ぐね🙇<br>①お名前 ②いま気になっていること を教えてもらえる？順番に確認してご連絡します。</td>
+<td>①→②→S3-400</td>
+</tr>
+<tr>
+<td>S3-120</td>
+<td>INPUT</td>
+<td>不安な気持ちにさせてしまって本当にごめんね。ここは曖昧にせず、正確にお伝えできるよう担当者から直接ご連絡するね🙇<br>①お名前 ②気がかりな点（見聞きした内容など）を教えてもらえる？必ず順番に確認してご案内します。</td>
+<td>①→②→S3-400</td>
+</tr>
+<tr>
+<td>S3-130</td>
+<td>INPUT</td>
+<td>ご連絡ありがとう。状況を正確に確認したいから担当者に繋ぐね🙇<br>①お名前 ②引き落とし日・金額 ③明細の表記（決済名義）を教えてもらえる？内容を確認のうえご案内します。</td>
+<td>①→②→③→S3-400</td>
+</tr>
+<tr>
+<td>S3-140</td>
+<td>INPUT</td>
+<td>登録情報の変更だね。<br>①今のご登録名 ②変えたい項目（メール/住所/氏名/電話）③変更後の内容 を教えてくれる？内容を整えて、サポートで手続きをご案内するね😊</td>
+<td>①→②→③→S3-400</td>
+</tr>
+<tr>
+<td>S3-150</td>
+<td>INPUT</td>
+<td>さしつかえなければ教えてください👇<br>①お名前<br>②どんなご相談か（例：料金／請求／受講期間／契約更新 など、ざっくりでOK）</td>
+<td>①→②→S3-400</td>
+</tr>
+<tr>
+<td>S3-400</td>
+<td>HANDOFF</td>
+<td>（内部）翻訳テンプレに整形して<strong>サポート（必ず人）</strong>へ:<br>【相談内容】選択されたテーマ（解約/不信/引落/登録変更/一般）<br>【背景・状況】聞き取った内容そのまま<br>【してほしいこと】受講生の希望<br>【これまでの経緯】AIは中身に回答していない（一次受けのみ）<br>※解約・不信は<strong>優先度フラグ</strong>を付けて送る</td>
+<td>→S3-401</td>
+</tr>
+<tr>
+<td>S3-401</td>
+<td>MSG</td>
+<td>内容を整えて担当に繋ぎました。<strong>24時間以内にお返事するね。</strong>（不信・解約の場合）ご不安なままにしないよう、順番にきちんとご案内します🙇</td>
+<td>→END</td>
+</tr>
+</tbody>
+</table>
+<h2>自由入力のキーワード判定表（E0→S3流入後の内部振り分け用）</h2>
+<table>
+<thead>
+<tr>
+<th>判定先</th>
+<th>キーワード</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S3-110 解約系</td>
+<td>解約, 退会, 休会, 退校, 返金, 解約金, クーリングオフ, クーリング・オフ</td>
+</tr>
+<tr>
+<td>S3-120 不信系</td>
+<td>詐欺, クレーム, 苦情, 弁護士, 消費者, 信用, 存続, 重大発表, 不安</td>
+</tr>
+<tr>
+<td>S3-130 引落系</td>
+<td>引き落と, 引落, 振込でき, 入金でき, 決済, カード, 2900</td>
+</tr>
+<tr>
+<td>S3-140 登録変更</td>
+<td>住所, 電話番号, 氏名, 登録情報, メールアドレス変更, 名義変更</td>
+</tr>
+<tr>
+<td>S3-150 一般</td>
+<td>料金, 受講料, 月額, 請求, 契約, 分割, 領収, インボイス, 受講期間, 保証期間, 更新, プラン, ローン, 残債</td>
+</tr>
+</tbody>
+</table>
+<h2>〔要確認〕（運営裏取り待ち・確定してもAIは即答しない＝担当の参照情報）</h2>
+<ol>
+<li>受講期間／保証期間／期間終了後の閲覧可否／更新条件・料金</li>
+<li>毎月の少額引き落とし（例: 2,900円）の名目</li>
+<li>メール変更時の本人確認・システム手順</li>
+</ol>
+<h2>UI実装への申し送り（菅さん向け）</h2>
+<ul>
+<li><strong>この相談だけ絵文字・タメ口を抑えめに</strong>（人格は同じ・少し丁寧め）。ボタン文言も上の通り敬体寄り。</li>
+<li>解約（1️⃣）・不信（2️⃣）はHANDOFFに<strong>優先度フラグ</strong>を付けてサポートの一次対応を早くしたい〔要確認: サポート側の受け口で優先度を扱えるか〕。</li>
+<li>「AIが金額・条件・可否を答えた」事故が一番怖い分岐。<strong>定型文以外を返さない</strong>実装であること。</li>
+</ul>
+<h2>根拠データ（束・件数）</h2>
+<table>
+<thead>
+<tr>
+<th>束ID</th>
+<th>束</th>
+<th style="text-align: right;">件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S3-01</td>
+<td>解約・退会・休会・返金</td>
+<td style="text-align: right;">334</td>
+</tr>
+<tr>
+<td>S3-02</td>
+<td>料金・受講料・プラン・契約内容</td>
+<td style="text-align: right;">130</td>
+</tr>
+<tr>
+<td>S3-03</td>
+<td>束外（共通フロー）</td>
+<td style="text-align: right;">95</td>
+</tr>
+<tr>
+<td>S3-04</td>
+<td>引き落とし・支払いトラブル</td>
+<td style="text-align: right;">31</td>
+</tr>
+<tr>
+<td>S3-05</td>
+<td>クレーム・不信・クーリングオフ</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr>
+<td>S3-06</td>
+<td>受講期間・延長・更新</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td>S3-07</td>
+<td>会社・サービスへの不信/重大発表への不安</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td>S3-08</td>
+<td>登録情報の変更</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr>
+<td>S3-09</td>
+<td>領収書・インボイス</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>

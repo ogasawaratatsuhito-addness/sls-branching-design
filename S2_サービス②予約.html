@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📅 S2 サービス② 予約 ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html" class="active">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ 📅 サービス② 予約の確認・変更（S2）</h1>
+<blockquote>
+<p>共通仕様=<code>00_共通仕様.md</code> ／ 体験像の正本=v9<br />
+根拠データ: 実質問842件（5束）＝<strong>全相談で最多</strong>。最多束は面談・1on1・コンサル予約499件。</p>
+</blockquote>
+<h2>この相談の設計方針（v9より）</h2>
+<ul>
+<li>「今この○○」確認なし。用件から入る。</li>
+<li>予約の中身（空き枠・確定・変更）はAIが触らない。<strong>何の予約か／やりたいこと／希望</strong>を会話で集め、整えてサポートへ。</li>
+<li>例外: 「入室リンクが分からない」だけは一次案内あり（当日で急ぎのケースが多いため）。</li>
+</ul>
+<h2>フロー全体図</h2>
+<p><div class="mermaid">flowchart TD
+    A[S2-000 予約のことだね! 何の予約?] --> B[S2-100 やりたいことを選ぶ]
+    A -->|入室リンクが分からない| L[S2-150 入室リンク一次案内]
+    L --> LC{S2-151 見つかった?}
+    LC -->|見つかった| S[S2-210 送り出し] --> Z1[END]
+    LC -->|見つからない| C
+    B --> C[S2-300 希望日時ほか聞き取り]
+    C --> H[S2-400 HANDOFF サポート] --> I[S2-401 24時間以内] --> Z2[END]
+</div></p>
+<h2>ノード定義</h2>
+<table>
+<thead>
+<tr>
+<th>ノードID</th>
+<th>種別</th>
+<th>文言／処理</th>
+<th>遷移</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S2-000</td>
+<td>CHOICE</td>
+<td>予約のことだね、まかせて！😊 まず、<strong>何の予約</strong>か教えてね👇<br>1️⃣ 面談・1on1・コンサル<br>2️⃣ セミナー・合宿・勉強会などのイベント<br>3️⃣ 入室のしかた・Zoomリンクが分からない<br>4️⃣ その他</td>
+<td>1,2,4→S2-100 ／ 3→S2-150</td>
+</tr>
+<tr>
+<td>S2-100</td>
+<td>CHOICE</td>
+<td>やりたいことはどれ？<br>1️⃣ 新しく予約したい 2️⃣ 予約の確認 3️⃣ 日程変更 4️⃣ キャンセル</td>
+<td>いずれも→S2-300</td>
+</tr>
+<tr>
+<td>S2-150</td>
+<td>MSG</td>
+<td>入室は、予約完了の案内 or 予約システムのリンクから入れるよ。まずそこを見てみてね👀<br>〔要確認: 入室リンクの正規の取得場所・再送の正式導線〕</td>
+<td>→S2-151</td>
+</tr>
+<tr>
+<td>S2-151</td>
+<td>CHOICE</td>
+<td>リンク、見つかった？<br>1️⃣ 見つかった！ 2️⃣ 見つからない…</td>
+<td>1→S2-210 ／ 2→S2-300（「入室リンク再送希望」と記録）</td>
+</tr>
+<tr>
+<td>S2-210</td>
+<td>MSG</td>
+<td>よかった！当日楽しんでね😊✨</td>
+<td>→END</td>
+</tr>
+<tr>
+<td>S2-300</td>
+<td>INPUT</td>
+<td>スムーズに進めるために教えてほしいな😊（1つずつでOK）<br>①お名前<br>②（何の予約か・S2-000で未選択なら）どの面談/イベント？<br>③希望の日時（変更・新規の場合。候補2〜3個あると早いよ）</td>
+<td>①→②→③→S2-400</td>
+</tr>
+<tr>
+<td>S2-400</td>
+<td>HANDOFF</td>
+<td>（内部）翻訳テンプレに整形して<strong>サポート</strong>へ:<br>【相談内容】予約の（新規/確認/変更/キャンセル/入室リンク再送）＝選択内容<br>【背景・状況】お名前・対象（面談/イベント名）<br>【してほしいこと】希望日時・希望の処理<br>【これまでの経緯】（入室リンクの場合）一次案内済み・見つからず</td>
+<td>→S2-401</td>
+</tr>
+<tr>
+<td>S2-401</td>
+<td>MSG</td>
+<td>内容を整えてサポートに送っておいたよ！<strong>24時間以内に返事くるよ💡</strong> 確定したらまた教えるね😊</td>
+<td>→END</td>
+</tr>
+</tbody>
+</table>
+<h2>自由入力のキーワード判定（E0からの流入用）</h2>
+<p>予約, 面談, 1on1, オリエン, 日程, リスケ, 再予約, キャンセル, zoom, ズーム, meet, 入室, 入り方, 参加リンク, 申し込み, 申込, 締切, 何時から, 開始時間, 開催, 参加したい, 参加でき, プライベートコンサル, プラコン, ブートキャンプ, 勉強会, 合宿, 新歓, 懇親会</p>
+<h2>〔要確認〕</h2>
+<ol>
+<li>入室リンクの正規の取得場所／再送の正式導線（S2-150）</li>
+<li>予約システムの直リンクを案内に含めるか（含められれば「新規予約」は自己解決に昇格できる＝最多499件に効く）</li>
+</ol>
+<h2>UI実装への申し送り（菅さん向け）</h2>
+<ul>
+<li><strong>ここが件数最多（842件）</strong>＝この分岐の体験がサポート負荷に一番効く。</li>
+<li>「何時から？」系のイベント時間の質問（イベント参加束200件に多い）は、イベント情報への導線が既にあれば S2-000 に「イベント情報を見る」ボタンを足す価値あり〔要確認: イベント情報の正規導線〕。</li>
+</ul>
+<h2>根拠データ（束・件数）</h2>
+<table>
+<thead>
+<tr>
+<th>束ID</th>
+<th>束</th>
+<th style="text-align: right;">件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S2-01</td>
+<td>面談・1on1・コンサルの予約</td>
+<td style="text-align: right;">499</td>
+</tr>
+<tr>
+<td>S2-02</td>
+<td>イベント参加・申込(セミナー/合宿/勉強会)</td>
+<td style="text-align: right;">200</td>
+</tr>
+<tr>
+<td>S2-03</td>
+<td>日程変更・再予約・キャンセル</td>
+<td style="text-align: right;">95</td>
+</tr>
+<tr>
+<td>S2-04</td>
+<td>入室方法・リンク</td>
+<td style="text-align: right;">34</td>
+</tr>
+<tr>
+<td>S2-05</td>
+<td>束外（共通フロー）</td>
+<td style="text-align: right;">14</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>

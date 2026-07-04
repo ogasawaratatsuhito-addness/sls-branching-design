@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📐 00 共通仕様 ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html" class="active">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>条件分岐 詳細設計 ｜ 00 共通仕様（全9相談に適用）</h1>
+<p>作成: 2026-07-03 ／ 正本の体験像: <code>../sls_question_entry_v9.md</code>（v9）<br />
+役割分担: <strong>条件分岐（フロー・文言・遷移）＝たつ側 ／ UI実装＝菅さん</strong><br />
+前提: <strong>LLMを挟まない</strong>。すべてボタン選択・自由入力のキーワード判定・固定文言で成立させる。</p>
+<hr />
+<h2>1. ノードの書き方（各相談ファイル共通）</h2>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ノードID</td>
+<td><code>相談コード-連番</code>（例: S1-101）。遷移先の指定に使う</td>
+</tr>
+<tr>
+<td>種別</td>
+<td>下表の6種</td>
+</tr>
+<tr>
+<td>文言／処理</td>
+<td>受講生に見せる文言（確定文・スキルプラスくんトンマナ）または内部処理</td>
+</tr>
+<tr>
+<td>遷移</td>
+<td>選択肢・条件ごとの次ノードID</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>種別</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MSG</td>
+<td>botの発話（表示して次へ自動遷移）</td>
+</tr>
+<tr>
+<td>CHOICE</td>
+<td>ボタン選択（選択肢ごとに遷移先）</td>
+</tr>
+<tr>
+<td>INPUT</td>
+<td>自由入力を受け取る</td>
+</tr>
+<tr>
+<td>ATTACH</td>
+<td>画像・ファイル添付を受け取る</td>
+</tr>
+<tr>
+<td>HANDOFF</td>
+<td>収集内容を翻訳テンプレに整形し、人（講師／サポート）へ送る</td>
+</tr>
+<tr>
+<td>END</td>
+<td>会話終了</td>
+</tr>
+</tbody>
+</table>
+<h2>2. 入口の共通ルール（v9全体像②）</h2>
+<ul>
+<li>入口は <strong>メニュー選択（9相談）＋自由入力</strong> の両対応。</li>
+<li>自由入力は<strong>キーワード判定</strong>（各相談ファイルに判定表。根拠=実際の質問3,295件 <code>../菅さん共有_質問データ.csv</code>）。</li>
+<li>判定できた → 「もしかして◯◯の相談かな？」と<strong>一度確認してから</strong>その相談のフローへ（誤爆をユーザーに直させる）。</li>
+<li>判定できない → 9相談メニューを提示（＝💬その他と同じ交通整理）。</li>
+<li>学習系（①②③④）はフロー冒頭で「今この『○○（今のアクション）』の話だよね？」を確認。サービス系・その他は用件から入る。</li>
+</ul>
+<h2>3. 解決確認ループ（その場で答えた後の共通形）</h2>
+<pre><code>これで解決した？
+　✅ 解決した → 〔送り出し（§4）〕→ END
+　🔁 まだ → （学習系のみ）「もしかして、こういうこと？」と一度だけ答え直す → それでもダメなら聞き取り→HANDOFF
+　　　　　　（サービス系）聞き取り→HANDOFF
+</code></pre>
+<h2>4. 送り出し文言（解決時・ローテーション表示）</h2>
+<pre><code>A:「解決したみたいでよかった😊 じゃあ、さっきのアクションの続きに戻ろっか！」
+B:「ナイス、これで進めるね✨ いま取り組んでたところから、また一緒にいこう💡」
+C:「よし、バッチリだね！この勢いで次の一歩いってみよう😊」
+</code></pre>
+<h2>5. HANDOFF（人へ渡す）の共通仕様</h2>
+<ul>
+<li>繋ぎ先: <strong>学習の中身（講義・添削・案件）→ 講師 ／ 手続き・トラブル（エラー・予約・支払い・資料・その他）→ サポート</strong>。</li>
+<li>収集した回答を下の<strong>翻訳テンプレ</strong>に機械的に埋めて送る（受講生には見せない・同じ説明を二度させない）:</li>
+</ul>
+<pre><code>【相談内容】（選択された束名／症状の要約）
+【背景・状況】（聞き取りで集めた回答をそのまま整形）
+【してほしいこと】（受講生の希望・選択内容）
+【これまでの経緯】（このフローで案内済みの一次対応と結果＝重複対応を防ぐ）
+</code></pre>
+<ul>
+<li>送った直後、必ず受講生に伝える: <strong>「24時間以内に返事くるよ😊」</strong>。</li>
+</ul>
+<h2>6. トンマナ</h2>
+<ul>
+<li>既存スキルプラスくん準拠: 明るく前向き／タメ口寄り（〜だよ・〜してね）／絵文字😊💡✨／番号・ボタンで選ばせる／伴走感。</li>
+<li><strong>💳支払い・解約・不信・クレームだけは人格そのまま少し丁寧め</strong>（謝意・寄り添い）。</li>
+</ul>
+<h2>7. 表記ルール</h2>
+<ul>
+<li>文言はすべて<strong>そのまま実装に載せられる確定文</strong>。未確定の事実（URL等）は <code>〔要確認: 何を〕</code> で明示し、ダミーを書かない。</li>
+<li>各相談ファイル末尾に「根拠データ（束・件数）」「〔要確認〕」「UI実装への申し送り」を置く。</li>
+</ul></main>
+</div></body></html>
