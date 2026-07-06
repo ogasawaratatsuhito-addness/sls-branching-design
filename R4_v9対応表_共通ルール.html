@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🔗 v9↔9相談 対応表 ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+nav .navsec{font-size:10.5px;color:#8E9AB8;margin:14px 0 4px;padding-left:10px;letter-spacing:.1em}
+.dlbtn{display:inline-block;background:var(--navy);color:#fff!important;font-size:11.5px;padding:3px 12px;border-radius:99px;text-decoration:none}
+.dlbtn:hover{background:var(--coral)}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="01_はじめに_読み方ガイド.html">👋 はじめに（読み方）</a>
+<a href="99_定例で決めたいこと.html">✅ 定例で決めたいこと</a>
+<a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a>
+<div class="navsec">参照元資料（正本）</div>
+<a href="R1_体験像v9.html">📜 体験像 v9（最上位正本）</a>
+<a href="R2_10問診断_質問項目.html">📝 10問診断 質問項目（正本）</a>
+<a href="R3_コース条件分岐ロジックv1.html">🧮 コース分岐ロジック v1（正本）</a>
+<a href="R4_v9対応表_共通ルール.html" class="active">🔗 v9↔9相談 対応表</a>
+<a href="R5_根拠データ概要.html">📊 根拠データの概要</a></nav>
+<main><blockquote>この資料は本設計書の<strong>参照元（正本）</strong>です。v9とこの設計の対応・共通ルール・確認点　<a class="dlbtn" href="assets/R4_v9対応表_共通ルール.md" download>⬇ 原本をダウンロード（.md）</a></blockquote><h1>条件分岐ベース QA設計（2026-06-25〜）</h1>
+<p><strong>最上位の正本＝<a href="sls_question_entry_v9.html">sls_question_entry_v9.md</a></strong>（小澤さんが正式に開発へ共有した「理想の体験像 v9」）。本ファイルは、その v9 の各分岐に<strong>実際に来ている質問の分類と回答</strong>を当てたもの。<br />
+かいてぃー共有の「5大項目」分岐は v9 の9相談と1:1で対応する（下の対応表）。旧「4出口(A/B/C/D)」はこの分岐に統合（対応表は §末尾）。</p>
+<h2>v9（9相談）↔ 本資料の中項目 対応（1:1）</h2>
+<table>
+<thead>
+<tr>
+<th>v9の相談</th>
+<th>本資料の中項目</th>
+<th>系統/繋ぎ先</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🧭学習① これからの進め方</td>
+<td>学習の進め方[1a]</td>
+<td>その場(10問診断→コース提示→追加) ／ 不安時サポート</td>
+</tr>
+<tr>
+<td>📘学習② 講義の内容で分からない</td>
+<td>講義内容の不明点(技術)[1b]</td>
+<td>その場(AIが講義データ参照)→ダメなら<strong>講師</strong></td>
+</tr>
+<tr>
+<td>✍️学習③ 作ったものを添削</td>
+<td>添削・レビュー依頼[2]</td>
+<td>成果物受領→<strong>講師/CS担当</strong></td>
+</tr>
+<tr>
+<td>💼学習④ 案件・お客様対応</td>
+<td>案件・お客様対応[1c]</td>
+<td>その場→ダメなら<strong>講師</strong></td>
+</tr>
+<tr>
+<td>🛠️サービス① エラー・不具合</td>
+<td>エラー・不具合[3-1]</td>
+<td>その場(対応集)→ダメなら<strong>サポート</strong></td>
+</tr>
+<tr>
+<td>📅サービス② 予約の確認・変更</td>
+<td>予約の確認・変更[3-2]</td>
+<td>整えて<strong>サポート</strong></td>
+</tr>
+<tr>
+<td>💳サービス③ 支払い・契約</td>
+<td>支払い・契約[3-3]</td>
+<td>中身に踏み込まず整えて<strong>サポート</strong></td>
+</tr>
+<tr>
+<td>📂サービス④ 資料・アーカイブ・特典の場所</td>
+<td>資料・アーカイブ・特典の場所[3-4]</td>
+<td>整えて<strong>サポート</strong>（場所が流動的なので人へ）</td>
+</tr>
+<tr>
+<td>💬その他</td>
+<td>その他の相談[4]</td>
+<td>交通整理→合流 or <strong>サポート</strong></td>
+</tr>
+<tr>
+<td>（共通ルール）AIチャット後の解決確認</td>
+<td>―（旧[5]。v9では全分岐共通の「解決した?/まだ」ループに統合）</td>
+<td>解決→学習に戻す ／ まだ→整えて人へ</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>v9で追加された体験ルール（全分岐に適用）: ①人へ渡す時は「整えてから」(翻訳テンプレ4項目) ②学習=講師/手続き=サポートの繋ぎ分け ③必ず「24時間以内に返事くるよ」 ④解決したら「次のアクションに戻ろう」 ⑤トンマナは既存スキルプラスくん準拠（タメ口寄り＋絵文字）。<br />
+注意点: v9の分岐先は サービス系＝公式サポートLINE、学習系＝講師。当初設計の[3-4]場所系「即答」は、v9では<strong>サポートへ繋ぐ</strong>(場所流動のため)が正。即答にするかは確認点（体験は即答が◎だが正確性はv9が優先）。</p>
+</blockquote>
+<ul>
+<li>分類対象データ: <code>questions_all_full.csv</code>（全期間5948件 / 実質質問5321件・noise627件）</li>
+<li>回答素材: <code>faq_draft.md</code>（確定回答）/ <code>qa_knowledge_base.md</code>（A1〜A23＋B/C/D誘導＋分類辞書）</li>
+<li>質問分類（件数・実例）: <code>classify_branching.py</code> → <code>branching_classification.md</code></li>
+<li><strong>回答まで決めた版</strong>: <code>branching_answers.md</code></li>
+</ul>
+<h3>全期間の件数（中項目別・実質5321件）</h3>
+<table>
+<thead>
+<tr>
+<th>中項目</th>
+<th style="text-align: right;">件数</th>
+<th style="text-align: right;">比率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>支払い・契約[3-3]</td>
+<td style="text-align: right;">597</td>
+<td style="text-align: right;">11.2%</td>
+</tr>
+<tr>
+<td>予約の確認・変更[3-2]</td>
+<td style="text-align: right;">564</td>
+<td style="text-align: right;">10.6%</td>
+</tr>
+<tr>
+<td>エラー・不具合[3-1]</td>
+<td style="text-align: right;">455</td>
+<td style="text-align: right;">8.6%</td>
+</tr>
+<tr>
+<td>講義内容の不明点(技術)[1b]</td>
+<td style="text-align: right;">430</td>
+<td style="text-align: right;">8.1%</td>
+</tr>
+<tr>
+<td>案件・お客様対応[1c]</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">5.3%</td>
+</tr>
+<tr>
+<td>資料・アーカイブ・特典の場所[3-4]</td>
+<td style="text-align: right;">234</td>
+<td style="text-align: right;">4.4%</td>
+</tr>
+<tr>
+<td>添削・レビュー依頼[2]</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">4.2%</td>
+</tr>
+<tr>
+<td>学習の進め方[1a]</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">1.1%</td>
+</tr>
+<tr>
+<td>その他[4]</td>
+<td style="text-align: right;">2476</td>
+<td style="text-align: right;">46.5%</td>
+</tr>
+<tr>
+<td>&gt; ※生ログのため「その他」はスタンプ・状況報告・複数ターンの会話断片が大半（単独質問でない）。回答対象は名前付き中項目に集中。</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>条件分岐ツリー（正本）</h2>
+<pre><code>[1] 学習系の相談            → 今のアクションに関する相談か確認 → はい → AIチャットへ
+     ├ 学習の進め方
+     ├ 講義内容の不明点
+     └ 案件・お客様対応
+[2] 添削依頼                → 画像 or URL を添付して添削依頼へ
+     ├ 作ったものを見てほしい
+     ├ 添削してほしい
+     └ レビューしてほしい
+[3] サポート系の相談        → 必要な情報を追加で聞く → 内容をまとめて公式サポートLINEへ案内
+     ├ エラー・不具合
+     ├ 予約の確認・変更
+     ├ 支払い・契約
+     └ 資料・アーカイブ・特典の場所
+[4] その他の相談            → 困っている内容を入力 → 公式サポートLINEへ案内
+     └ 上記に当てはまらない相談
+[5] AIチャット後の解決確認  → 解決した → 終了 / まだ → 会話を要約して公式サポートLINEへ
+     ├ 解決した
+     └ まだ解決していない
+</code></pre>
+<hr />
+<h2>各中項目の「下の階層（質問分類）＋回答」設計</h2>
+<blockquote>
+<p>凡例: <strong>回答方式</strong> = ①固定回答(その場で答える) / ②AIチャットへ誘導 / ③添削フローへ / ④情報収集→公式サポLINEへ / ⑤定型誘導文。<br />
+〔要確認〕= リンク/料金/期間/仕様。公開前に運営で裏取り。</p>
+</blockquote>
+<h3>[1] 学習系の相談 → AIチャットへ（回答方式②）</h3>
+<p>分岐先がAIチャットなので、ここは<strong>固定回答を持たない</strong>。AIチャット（RAG/LLM）が中身を答える。下の質問分類は「AIチャットが何を答えられる必要があるか」の要件として使う。</p>
+<table>
+<thead>
+<tr>
+<th>中項目</th>
+<th>来る質問(例)</th>
+<th>回答方式</th>
+<th>メモ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>学習の進め方</td>
+<td>何から始める/順番/学習ペース/どのコースから</td>
+<td>②AIチャット</td>
+<td>方向性そのものの相談は本来は面談C。AIチャットで一次対応し、必要なら面談導線へ（→確認点）</td>
+</tr>
+<tr>
+<td>講義内容の不明点</td>
+<td>Claude Code/API/Dify/MCPのやり方・エラー、講義動画の内容</td>
+<td>②AIチャット</td>
+<td>旧B(講師質問)がここに統合。<strong>ログ保存の扱いをどうするか確認点</strong></td>
+</tr>
+<tr>
+<td>案件・お客様対応</td>
+<td>案件の進め方/単価/クライアント対応/納品</td>
+<td>②AIチャット</td>
+<td>旧Cの一部。個別性が高いものは面談へ（→確認点）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ゲート文（案）</strong>: 「これは“今取り組んでいるアクション”についての相談ですか？」→ はい＝AIチャットへ / いいえ＝[4]その他 or 該当大項目へ誘導。</p>
+<h3>[2] 添削依頼 → 添削フロー（回答方式③）</h3>
+<table>
+<thead>
+<tr>
+<th>中項目</th>
+<th>来る質問(例)</th>
+<th>回答方式</th>
+<th>回答/案内文(案)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>作ったものを見てほしい</td>
+<td>ポートフォリオ/成果物を見てほしい</td>
+<td>③添削フロー</td>
+<td>「作成物を添削します。<strong>画像 または URL を添付</strong>して送ってください」</td>
+</tr>
+<tr>
+<td>添削してほしい</td>
+<td>提案文/プロフィール/記事の添削</td>
+<td>③添削フロー</td>
+<td>同上＋「どこを見てほしいか（目的）も一言添えてください」</td>
+</tr>
+<tr>
+<td>レビューしてほしい</td>
+<td>コード/制作物のレビュー</td>
+<td>③添削フロー</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<p><strong>確認点</strong>: 添削の中身は誰が返す？（AIチャットで一次添削→講師確認 or 講師のみ）。画像/URLの受け取り方（Lステップで添付を受けてAIへ渡せるか）。</p>
+<h3>[3] サポート系の相談 → 情報収集→公式サポLINE（ただし“場所系”は固定回答できる）</h3>
+<p>ここが<strong>回答を決める本丸</strong>。4中項目で性質が分かれる。</p>
+<h4>3-1 エラー・不具合（回答方式①一次切り分け→ダメなら④）</h4>
+<p>まず定型のトラブルシュートを返し、解決しなければ情報収集して人へ。<br />
+- 該当する既存回答: ログイン不可/白画面/419=<code>qa A-03</code>(✅確定) / 動画再生・音声=<code>A-15</code>(✅) / なんでもサポートくん=<code>A-10</code>(✅) / コース解放・ロック=<code>A-02</code>(リンク〔要確認〕)<br />
+- 技術系のエラー（Claude Code等）は[1]講義内容（AIチャット）へ寄せるか要確認。<br />
+- <strong>回答(案)</strong>: 各テーマの確定回答（上記）をそのまま返す → 「解決しない場合は、画面のスクショと“いつ・どの画面で・何が起きたか”を添えて公式サポートLINEへ」。</p>
+<h4>3-2 予約の確認・変更（回答方式④＋一部①）</h4>
+<ul>
+<li>入室方法の一般案内=<code>A-11</code>(⚠️)。予約・変更・キャンセルは予約システム/人。</li>
+<li><strong>回答(案)</strong>: 「ご予約の確認・変更・キャンセルですね。①お名前 ②予約日時 ③ご希望（確認/変更/キャンセル）を教えてください。内容をまとめて公式サポートLINEへお繋ぎします」〔要確認: 予約リンクを案内に含めるか〕。</li>
+</ul>
+<h4>3-3 支払い・契約（回答方式④・<strong>自動回答しない＝必ず人</strong>）</h4>
+<ul>
+<li>旧D。解約/返金/支払いトラブル/契約乖離=<code>qa routing D</code>。受講期間・契約更新=<code>A-04</code>(❌要確認)、毎月少額引落=<code>A-22</code>(❌要確認)。</li>
+<li><strong>回答(案)</strong>: 「お支払い・ご契約に関するお問い合わせですね。正確にご案内するため担当者にお繋ぎします。①お名前 ②ご質問内容 を教えてください」→ 公式サポLINE/人。<strong>AIで金額・条件・可否を即答しない</strong>。</li>
+</ul>
+<h4>3-4 資料・アーカイブ・特典の場所（回答方式①固定回答＝即答できる本命）</h4>
+<p>ここは自己解決FAQで即答できる。来た人を待たせず解決＝価値が一番高い。<br />
+- アーカイブの場所=<code>A-01</code>(✅faq Q9) / アーカイブいつ=<code>A-19</code>(✅) / ワークシート提出=<code>A-09</code>(✅faq Q7) / 教材・コースの場所=<code>A-08</code>(⚠️) / 特典の受け取り（〔要確認〕・別導線）。<br />
+- <strong>回答(案)</strong>: 該当テーマの確定回答を即答。特典など未整備のものは「特典の受け取りは公式サポートLINEへ」。</p>
+<h3>[4] その他の相談 → 公式サポLINE（回答方式④）</h3>
+<ul>
+<li><strong>回答(案)</strong>: 「承知しました。困っている内容をできるだけ具体的に教えてください（①状況 ②困っていること）。内容を確認して公式サポートLINEからご案内します」。</li>
+</ul>
+<h3>[5] AIチャット後の解決確認（回答方式⑤定型）</h3>
+<ul>
+<li>解決した → 「解決してよかったです！また何かあればいつでもどうぞ😊」（終了）</li>
+<li>まだ → 会話を要約 → 「担当者にお繋ぎします。ここまでのやりとりをまとめて共有しますね」→ 公式サポLINE。</li>
+</ul>
+<hr />
+<h2>旧4出口 → 新5大項目 対応表</h2>
+<table>
+<thead>
+<tr>
+<th>旧出口</th>
+<th>新しい行き先</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 自己解決</td>
+<td>主に [3-4]資料・アーカイブ・特典の場所、[3-1]エラー一次切り分け</td>
+</tr>
+<tr>
+<td>B 講師質問(AI技術)</td>
+<td>[1]講義内容の不明点 → <strong>AIチャット</strong>（旧:講師質問へ誘導から変更）</td>
+</tr>
+<tr>
+<td>C 面談(方向性/案件)</td>
+<td>[1]学習の進め方・案件 → <strong>AIチャット</strong>（面談導線の扱いは確認点）</td>
+</tr>
+<tr>
+<td>D 有人(解約/支払い)</td>
+<td>[3-3]支払い・契約 → 情報収集→公式サポLINE（必ず人）</td>
+</tr>
+</tbody>
+</table>
+<h2>確認点（かいてぃー／運営とすり合わせ）</h2>
+<ol>
+<li><strong>面談(1on1)導線の位置</strong>: 旧Cの「方向性相談・ゴール設定1on1」は新ツリーに明示が無い。AIチャット内から面談予約へ繋ぐのか、[3]予約に入れるのか。</li>
+<li><strong>AIチャットの中身</strong>: [1]に流す学習系の回答エンジンは、今回作るRAG（<code>qa_knowledge_base.md</code>＋過去ログ）か、既存の「なんでもサポートくん/講師質問」か。</li>
+<li><strong>講義内容(旧B)のログ保存</strong>: 旧運用は「講師質問はログが残るので便利」と誘導。AIチャットに寄せるとログ運用が変わる。どうするか。</li>
+<li><strong>添削の返し手</strong>: AI一次添削か講師か。画像/URL添付をLステップ→AIへ渡せるか。</li>
+<li><strong>サポート系の即答 vs 情報収集</strong>: [3-4]場所系は即答FAQにしてよいか（分岐先は一律「情報収集→サポLINE」だが、場所系は即答が受講生体験◎）。</li>
+</ol></main>
+</div></body></html>

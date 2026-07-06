@@ -14,6 +14,9 @@ nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
 nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
 nav a:hover{background:var(--navy2)}
 nav a.active{background:var(--coral);color:#fff;font-weight:600}
+nav .navsec{font-size:10.5px;color:#8E9AB8;margin:14px 0 4px;padding-left:10px;letter-spacing:.1em}
+.dlbtn{display:inline-block;background:var(--navy);color:#fff!important;font-size:11.5px;padding:3px 12px;border-radius:99px;text-decoration:none}
+.dlbtn:hover{background:var(--coral)}
 main{flex:1;padding:34px 44px;max-width:1080px}
 h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
 h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
@@ -58,7 +61,13 @@ mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
 <a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
 <a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
 <a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
-<a href="X_その他.html">💬 X その他</a></nav>
+<a href="X_その他.html">💬 X その他</a>
+<div class="navsec">参照元資料（正本）</div>
+<a href="R1_体験像v9.html">📜 体験像 v9（最上位正本）</a>
+<a href="R2_10問診断_質問項目.html">📝 10問診断 質問項目（正本）</a>
+<a href="R3_コース条件分岐ロジックv1.html">🧮 コース分岐ロジック v1（正本）</a>
+<a href="R4_v9対応表_共通ルール.html">🔗 v9↔9相談 対応表</a>
+<a href="R5_根拠データ概要.html">📊 根拠データの概要</a></nav>
 <main><h1>条件分岐 詳細設計 ｜ 🧭 学習① これからの進め方を相談したい（G1）</h1>
 <blockquote>
 <p>共通仕様=<code>00_共通仕様.md</code> ／ 体験像の正本=v9<br />
@@ -99,7 +108,7 @@ mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
 <tr>
 <td>G1-101〜110</td>
 <td>INPUT/CHOICE</td>
-<td>10問診断を1問ずつ: ①呼び方 ②職業 ③変えたいこと ④動機 ⑤興味のある分野 ⑥ビジネス経験 ⑦AI経験 ⑧PCの有無 ⑨使える時間 ⑩〔確定済み正本を参照〕<br>※各問の文言・選択肢・コース判定ロジック＝<strong>2026-05-30確定の分岐ルール正本</strong>をそのまま使う〔要確認: 正本ドキュメントをこのフォルダに取り込む〕</td>
+<td>10問診断を1問ずつ聞く。<strong>各問の文言・選択肢＝正本「10問診断 質問項目（清書v2）」</strong>、<strong>回答→コースの決め方＝正本「コース条件分岐ロジック v1」</strong>（PC前提→属性→経験/分野の3ゲート。いずれも2026-05-30 かいてぃ&amp;たつ確定・本ビューアの「参照元資料」で閲覧/DL可）</td>
 <td>順に次の問→G1-200</td>
 </tr>
 <tr>
@@ -149,7 +158,7 @@ mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
 <p>何から, どう進め, 進め方, 順番, ペース, 方向性, 迷って, 相談したい, どのコース, コース選, 最初に, カリキュラム, ロードマップ, ゴール設定, 目標設定, 次は何, 再開, 復帰, モチベ, 挫折</p>
 <h2>〔要確認〕</h2>
 <ol>
-<li>10問の文言・選択肢・コース判定ロジックの正本（2026-05-30 かいてぃ&amp;たつ確定）をこのフォルダに取り込む</li>
+<li>~~10問の正本の取り込み~~ → ✅済み（参照元資料 R2「10問診断 質問項目」・R3「コース条件分岐ロジック v1」として同梱）</li>
 <li>コース追加導線のURL/操作</li>
 <li>受講履歴の取得可否（2回目以降の提示制御）</li>
 </ol>

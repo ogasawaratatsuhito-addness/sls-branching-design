@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🧮 コース分岐ロジック v1（正本） ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+nav .navsec{font-size:10.5px;color:#8E9AB8;margin:14px 0 4px;padding-left:10px;letter-spacing:.1em}
+.dlbtn{display:inline-block;background:var(--navy);color:#fff!important;font-size:11.5px;padding:3px 12px;border-radius:99px;text-decoration:none}
+.dlbtn:hover{background:var(--coral)}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="01_はじめに_読み方ガイド.html">👋 はじめに（読み方）</a>
+<a href="99_定例で決めたいこと.html">✅ 定例で決めたいこと</a>
+<a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a>
+<div class="navsec">参照元資料（正本）</div>
+<a href="R1_体験像v9.html">📜 体験像 v9（最上位正本）</a>
+<a href="R2_10問診断_質問項目.html">📝 10問診断 質問項目（正本）</a>
+<a href="R3_コース条件分岐ロジックv1.html" class="active">🧮 コース分岐ロジック v1（正本）</a>
+<a href="R4_v9対応表_共通ルール.html">🔗 v9↔9相談 対応表</a>
+<a href="R5_根拠データ概要.html">📊 根拠データの概要</a></nav>
+<main><blockquote>この資料は本設計書の<strong>参照元（正本）</strong>です。10問の回答→次の1コースの決め方（2026-05-30 かいてぃ&たつ確定）　<a class="dlbtn" href="assets/R3_コース条件分岐ロジックv1.md" download>⬇ 原本をダウンロード（.md）</a></blockquote><h1>コース条件分岐ロジック v1</h1>
+<ul>
+<li>作成: 2026-05-30</li>
+<li>対象: ゴール設定モード（質問項目-清書v2）の回答 → 次に歩む1コースを決める</li>
+<li>出典: 2026-05-30 かいてぃーさん打ち合わせ＋たつ確定</li>
+<li>前版: かいてぃーさん共有-コース条件分岐-v0.1 / コース分岐フロー-v0.6</li>
+</ul>
+<h2>大前提</h2>
+<ul>
+<li>提示するのは「次に歩む1コース」1つだけ。</li>
+<li>「ビジネス入門コース」はクライアントワーク向けの土台コース。</li>
+<li>自社（経営者・個人事業主）はビジネス入門に回さず、分野の自社向けコースへ直行する。</li>
+</ul>
+<h2>分岐に使う質問</h2>
+<ul>
+<li>問2 職業（属性）… 自社 / クライアントワーク の判定</li>
+<li>問5 分野（9択）… どの系統のコースか</li>
+<li>問6 ビジネス経験 … CWで入門を挟むかの判定（自社では見ない）</li>
+<li>問7 生成AI経験 … 生成AI分野の入門/本コース出し分け</li>
+<li>問8 PC使用状況 … PC前提ゲート</li>
+<li>問9 学習時間 … コース選択には使わない（学習レポート用）</li>
+</ul>
+<h2>属性の定義</h2>
+<ul>
+<li>自社: 経営者・役員 / 個人事業主</li>
+<li>クライアントワーク（CW）: 会社員 / 公務員 / 学生 / パート・バイト / 主婦・主夫 / 休職中 / 求職中 / 退職・無職</li>
+</ul>
+<hr />
+<h2>分岐フロー（上から順に評価）</h2>
+<h3>ゲート1: PC前提（最優先）</h3>
+<ul>
+<li>PCを持っていない、または 持っているが使い方がよく分かっていない<br />
+  → <strong>ビジネス入門コース</strong></li>
+<li>それ以外 → ゲート2へ</li>
+</ul>
+<h3>ゲート2: 属性</h3>
+<ul>
+<li>自社（経営者・個人事業主）→ <strong>ゲート3A（経験年数は見ない）</strong></li>
+<li>クライアントワーク → <strong>ゲート3B</strong></li>
+</ul>
+<h3>ゲート3A: 自社 → 分野の自社向けコースへ直行</h3>
+<table>
+<thead>
+<tr>
+<th>分野</th>
+<th>案内コース</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生成AI</td>
+<td>AI経験で分岐（※生成AIルール）</td>
+</tr>
+<tr>
+<td>SNSマーケ</td>
+<td>SNSマーケターコース</td>
+</tr>
+<tr>
+<td>広告マーケ</td>
+<td>広告マーケターコース</td>
+</tr>
+<tr>
+<td>導線構築</td>
+<td>導線構築コース</td>
+</tr>
+<tr>
+<td>デザイン</td>
+<td>デザイナーコース</td>
+</tr>
+<tr>
+<td>動画編集</td>
+<td>動画編集入門コース</td>
+</tr>
+<tr>
+<td>ライティング</td>
+<td>SEO入門コース</td>
+</tr>
+<tr>
+<td>営業</td>
+<td>営業代行コース</td>
+</tr>
+<tr>
+<td>マインドセット</td>
+<td>マインドセットコース</td>
+</tr>
+</tbody>
+</table>
+<p>※自社はビジネス経験年数を見ない。3年未満でも分野コースへ直行（例: 自社×3年未満×SNS → SNSマーケター、自社×3年未満×動画 → 動画編集入門、自社×3年未満×生成AI → 生成AI入門直行）。</p>
+<h3>ゲート3B: クライアントワーク → ビジネス経験で分岐</h3>
+<ul>
+<li><strong>ビジネス経験 3年未満</strong><br />
+  → <strong>ビジネス入門コース</strong>（CW向けの土台）<br />
+  → 終了後に、選んだ分野のコースへ進む（生成AI分野の場合は「生成AI入門」から）<br />
+  → <strong>例外: 動画編集を選んだ場合はビジネス入門を経由せず、動画編集コースへ直行</strong></li>
+<li><strong>ビジネス経験 3年以上</strong><br />
+  → 分野のCW向けコースへ直行（下表）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>分野</th>
+<th>CW向けコース</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生成AI</td>
+<td>AI経験で分岐（※生成AIルール）</td>
+</tr>
+<tr>
+<td>SNSマーケ</td>
+<td>Instagram運用代行コース</td>
+</tr>
+<tr>
+<td>広告マーケ</td>
+<td>広告運用代行コース</td>
+</tr>
+<tr>
+<td>導線構築</td>
+<td>導線構築コース</td>
+</tr>
+<tr>
+<td>デザイン</td>
+<td>デザイナーコース</td>
+</tr>
+<tr>
+<td>動画編集</td>
+<td>動画編集コース</td>
+</tr>
+<tr>
+<td>ライティング</td>
+<td>SEO入門コース</td>
+</tr>
+<tr>
+<td>営業</td>
+<td>営業代行コース</td>
+</tr>
+<tr>
+<td>マインドセット</td>
+<td>マインドセットコース</td>
+</tr>
+</tbody>
+</table>
+<h3>特例ルール: 生成AI分野は AI経験で入門/本コースを分ける</h3>
+<ul>
+<li>AI経験なし → 生成AI入門コース</li>
+<li>AI経験あり（少しでも使ったことがある〜日常活用）→ 生成AIコース</li>
+<li>CW×3年未満で生成AIの場合は、ビジネス入門 → そのあと生成AI入門から。</li>
+</ul>
+<hr />
+<h2>分野×属性 早見表（3年以上 or 自社の行き先）</h2>
+<table>
+<thead>
+<tr>
+<th>分野</th>
+<th>自社</th>
+<th>クライアントワーク</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生成AI</td>
+<td>生成AI入門/生成AIコース（AI経験で）</td>
+<td>生成AI入門/生成AIコース（AI経験で）</td>
+</tr>
+<tr>
+<td>SNSマーケ</td>
+<td>SNSマーケターコース</td>
+<td>Instagram運用代行コース</td>
+</tr>
+<tr>
+<td>広告マーケ</td>
+<td>広告マーケターコース</td>
+<td>広告運用代行コース</td>
+</tr>
+<tr>
+<td>導線構築</td>
+<td>導線構築コース</td>
+<td>導線構築コース</td>
+</tr>
+<tr>
+<td>デザイン</td>
+<td>デザイナーコース</td>
+<td>デザイナーコース</td>
+</tr>
+<tr>
+<td>動画編集</td>
+<td>動画編集入門コース</td>
+<td>動画編集コース</td>
+</tr>
+<tr>
+<td>ライティング</td>
+<td>SEO入門コース</td>
+<td>SEO入門コース</td>
+</tr>
+<tr>
+<td>営業</td>
+<td>営業代行コース</td>
+<td>営業代行コース</td>
+</tr>
+<tr>
+<td>マインドセット</td>
+<td>マインドセットコース</td>
+<td>マインドセットコース</td>
+</tr>
+</tbody>
+</table>
+<p>注:<br />
+- Instagram運用代行は自社/CWどちらでもOK。SNSマーケターは自社向け（自社商品販売）。<br />
+- 動画編集はCW×3年未満でもビジネス入門を経由せず動画編集コースへ直行（唯一の例外）。</p>
+<hr />
+<h2>残課題・要確認</h2>
+<ul>
+<li>分野「まだ決まっていない」の受け皿は作らない。問5は9分野から必ず1つ選ばせる方針で確定（2026-05-30）。</li>
+<li>マインドセットコースは「全員共通で見る」位置づけだったが、問5で選択分野としても残すか。</li>
+<li>2回目以降（SLS履歴で完了コースを除外・進行中コース優先）の扱い。前版v0.6を踏襲する想定。</li>
+<li>期限をどこで取るか（質問にするか対話で添えるか）。</li>
+</ul></main>
+</div></body></html>

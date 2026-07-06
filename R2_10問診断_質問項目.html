@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📝 10問診断 質問項目（正本） ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+nav .navsec{font-size:10.5px;color:#8E9AB8;margin:14px 0 4px;padding-left:10px;letter-spacing:.1em}
+.dlbtn{display:inline-block;background:var(--navy);color:#fff!important;font-size:11.5px;padding:3px 12px;border-radius:99px;text-decoration:none}
+.dlbtn:hover{background:var(--coral)}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="01_はじめに_読み方ガイド.html">👋 はじめに（読み方）</a>
+<a href="99_定例で決めたいこと.html">✅ 定例で決めたいこと</a>
+<a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a>
+<div class="navsec">参照元資料（正本）</div>
+<a href="R1_体験像v9.html">📜 体験像 v9（最上位正本）</a>
+<a href="R2_10問診断_質問項目.html" class="active">📝 10問診断 質問項目（正本）</a>
+<a href="R3_コース条件分岐ロジックv1.html">🧮 コース分岐ロジック v1（正本）</a>
+<a href="R4_v9対応表_共通ルール.html">🔗 v9↔9相談 対応表</a>
+<a href="R5_根拠データ概要.html">📊 根拠データの概要</a></nav>
+<main><blockquote>この資料は本設計書の<strong>参照元（正本）</strong>です。G1進め方で聞く10問（2026-05-30 たつ最新版）　<a class="dlbtn" href="assets/R2_10問診断_質問項目.md" download>⬇ 原本をダウンロード（.md）</a></blockquote><h1>スキルプラス ゴール設定モード｜質問項目</h1>
+<p>最終更新: 2026-05-30（たつ最新版）</p>
+<h2>① 目的</h2>
+<p>受講生が、今の自分に合う次の1コースを納得して選び、迷わず最初のアクションに進めている。</p>
+<h2>② 目的を満たすための要件</h2>
+<ol>
+<li>受講生のゴール（定性的な方向性が決まっている。期限は軽く取る）が決まっている</li>
+<li>ゴール達成のために次にやるべきコースが決まっている</li>
+<li>決まったゴールに納得している</li>
+<li>決まった1コースのコース追加リンクをタップして、コースを追加している</li>
+</ol>
+<hr />
+<h2>③ 質問項目</h2>
+<p><strong>問1. なんとお呼びすればいいですか？</strong><br />
+- （自由入力）</p>
+<p><strong>問2. 今のあなたの職業は？</strong><br />
+- 経営者・役員<br />
+- 個人事業主<br />
+- 会社員<br />
+- 公務員<br />
+- 学生<br />
+- パート・バイト<br />
+- 主婦・主夫<br />
+- 休職中<br />
+- 求職中<br />
+- 退職・無職</p>
+<p><strong>問3. 今、いちばん変えたいことは何ですか？</strong><br />
+- 今の仕事の収入・成果を上げたい<br />
+- 新しい収入源をつくりたい<br />
+- 働き方そのものを変えたい<br />
+- その他・まだうまく言えない</p>
+<p><strong>問4. それを変えたいのは、なぜですか？</strong><br />
+- 将来の不安を減らしたい<br />
+- 自信をつけたい<br />
+- 自立したい<br />
+- 大切な人を安心させたい<br />
+- その他</p>
+<p><strong>問5. その実現に向けて、どの分野を学びたいですか？</strong><br />
+- 生成AI<br />
+- SNSマーケ<br />
+- 広告マーケ<br />
+- 導線構築<br />
+- 営業<br />
+- デザイン<br />
+- 動画編集<br />
+- ライティング<br />
+- マインドセット</p>
+<p><strong>問6. ご自身でビジネス（副業・起業・フリーランスなど）をやった経験はどれくらいですか？</strong><br />
+※雇用されての仕事（会社員・パートなど）は含みません。<br />
+- 1年未満<br />
+- 1〜3年未満<br />
+- 3〜5年未満<br />
+- 5〜10年未満<br />
+- 10年以上</p>
+<p><strong>問7. 生成AIの使用経験はどれくらいありますか？</strong><br />
+- 生成AIを使ったことがない<br />
+- 使ったことはあるが、使い方はよく分かっていない<br />
+- 日常的に仕事で活用している</p>
+<p><strong>問8. パソコンの使用状況について教えてください。</strong><br />
+- 持っていて日常的に使っている<br />
+- 持っているが使い方がよく分かっていない<br />
+- 持っていない</p>
+<p><strong>問9. 週にどれくらい、スキルプラスに取り組めそうですか？</strong><br />
+- 10時間（1日1〜1.5時間）<br />
+- 20時間（1日2〜3時間）<br />
+- 40時間（1日5〜6時間）<br />
+- 40時間以上（1日6時間以上）</p>
+<p><strong>問10. このコースで進めますか？</strong><br />
+- このコースで進む<br />
+- もう一度回答する<br />
+- 不安なのでサポートに相談したい</p>
+<hr />
+<h2>④ 質問項目と意図（なぜこの質問・選択肢を置くのか）</h2>
+<table>
+<thead>
+<tr>
+<th>質問</th>
+<th>意図（why）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>問1. 呼び方は？</td>
+<td>最初に呼び方を握り、その後の対話の距離感・温度をつくる。</td>
+</tr>
+<tr>
+<td>問2. 今の職業は？</td>
+<td>受講生の現在地（立場）を把握し、ゴールの現実性やコースの合わせ方を判断するため</td>
+</tr>
+<tr>
+<td>問3. いちばん変えたいことは？</td>
+<td>何を変えたいか＝ゴールの方向を本人に選ばせ、ゴールを自分ごとにするため。稼ぐ以外の動機は「その他・まだうまく言えない」で受ける</td>
+</tr>
+<tr>
+<td>問4. それを変えたいのはなぜ？</td>
+<td>動機を引き出し、ゴールへの納得を深めるため</td>
+</tr>
+<tr>
+<td>問5. どの分野に興味がある？</td>
+<td>興味のある分野から進むコースを選ぶため（選択肢＝提供コースに対応）</td>
+</tr>
+<tr>
+<td>問6. 主体的なビジネス経験は？</td>
+<td>経験が浅い人（1年未満）にビジネス入門コースを挟むか判断するため。雇用されての勤続年数ではなく「自分で主体的にやったビジネス経験」を聞く（物差しを1本に統一し、社会人◯年と混同させない）</td>
+</tr>
+<tr>
+<td>問7. 生成AIの使用経験は？</td>
+<td>AI経験で生成AI入門か生成AIコースかを出し分けるため</td>
+</tr>
+<tr>
+<td>問8. パソコンは？</td>
+<td>実行環境に合うコースを選ぶため。「持っているが使いこなせていない」はビジネス入門コース等でPC基礎から案内する分岐に使う</td>
+</tr>
+<tr>
+<td>問9. 週に使える時間は？</td>
+<td>使える時間でゴールの現実性と負荷の合うコース・進め方を判断するため</td>
+</tr>
+<tr>
+<td>問10. このコースで進める？</td>
+<td>提案コースで進む意思を確認するため。納得は質問で追わず、提示後のこの選択肢で担保する。「もう一度回答する」＝適当に答えた人のやり直し用、「サポートに相談」＝不安な人の受け皿</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>

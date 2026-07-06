@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📊 根拠データの概要 ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+nav .navsec{font-size:10.5px;color:#8E9AB8;margin:14px 0 4px;padding-left:10px;letter-spacing:.1em}
+.dlbtn{display:inline-block;background:var(--navy);color:#fff!important;font-size:11.5px;padding:3px 12px;border-radius:99px;text-decoration:none}
+.dlbtn:hover{background:var(--coral)}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="01_はじめに_読み方ガイド.html">👋 はじめに（読み方）</a>
+<a href="99_定例で決めたいこと.html">✅ 定例で決めたいこと</a>
+<a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a>
+<div class="navsec">参照元資料（正本）</div>
+<a href="R1_体験像v9.html">📜 体験像 v9（最上位正本）</a>
+<a href="R2_10問診断_質問項目.html">📝 10問診断 質問項目（正本）</a>
+<a href="R3_コース条件分岐ロジックv1.html">🧮 コース分岐ロジック v1（正本）</a>
+<a href="R4_v9対応表_共通ルール.html">🔗 v9↔9相談 対応表</a>
+<a href="R5_根拠データ概要.html" class="active">📊 根拠データの概要</a></nav>
+<main><blockquote>この資料は本設計書の<strong>参照元（正本）</strong>です。全5,948件の分類・束の考え方・除外基準　<a class="dlbtn" href="assets/R5_根拠データ概要.md" download>⬇ 原本をダウンロード（.md）</a></blockquote><h1>菅さん共有パッケージ ｜ 「よくある質問」条件分岐の設計材料</h1>
+<p>作成: 2026-07-03 ／ 作成者: 小笠原（＋AI） ／ 根拠データ: サポートLINE全期間の受講生質問（2025-04〜2026-06）</p>
+<h2>これは何？</h2>
+<p>スキルプラスくん「質問する」の体験（正本=<code>sls_question_entry_v9.md</code>・小澤さんが開発へ共有済み）を、<strong>LLMを挟まず条件分岐で実装する</strong>ための材料です。<br />
+実際の受講生の質問を、v9の9相談 → さらに「<strong>同じ返しで対応できる質問の束</strong>」まで細分化し、各束に回答文・繋ぎ先を付けました。</p>
+<h2>ファイル構成（3点）</h2>
+<table>
+<thead>
+<tr>
+<th>ファイル</th>
+<th>中身</th>
+<th>使い方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>菅さん共有_条件分岐マスター.csv</code></td>
+<td>1行=1束（全53束）。回答本文・繋ぎ先・ステータス付き</td>
+<td><strong>分岐ツリーの設計図</strong>。この束が分岐の最小単位</td>
+</tr>
+<tr>
+<td><code>菅さん共有_質問データ.csv</code></td>
+<td>1行=1質問（全3295件・束IDで紐づく）</td>
+<td><strong>各分岐に実際に来る質問の生の言い回し</strong>。分岐の文言設計・判定キーワード設計の材料</td>
+</tr>
+<tr>
+<td><code>菅さん共有_概要.md</code></td>
+<td>本ファイル</td>
+<td>読み方・除外基準・確認事項</td>
+</tr>
+</tbody>
+</table>
+<h2>件数（9相談別）</h2>
+<table>
+<thead>
+<tr>
+<th>9相談</th>
+<th style="text-align: right;">件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🧭学習① これからの進め方</td>
+<td style="text-align: right;">163</td>
+</tr>
+<tr>
+<td>📘学習② 講義の内容で分からない</td>
+<td style="text-align: right;">311</td>
+</tr>
+<tr>
+<td>✍️学習③ 作ったものを添削してほしい</td>
+<td style="text-align: right;">268</td>
+</tr>
+<tr>
+<td>💼学習④ 案件・お客様対応の相談</td>
+<td style="text-align: right;">309</td>
+</tr>
+<tr>
+<td>🛠️サービス① エラー・不具合</td>
+<td style="text-align: right;">363</td>
+</tr>
+<tr>
+<td>📅サービス② 予約の確認・変更</td>
+<td style="text-align: right;">842</td>
+</tr>
+<tr>
+<td>💳サービス③ お支払い・ご契約</td>
+<td style="text-align: right;">666</td>
+</tr>
+<tr>
+<td>📂サービス④ 資料・アーカイブ・特典の場所</td>
+<td style="text-align: right;">373</td>
+</tr>
+<tr>
+<td>💬その他のご相談</td>
+<td style="text-align: right;">(1763)※</td>
+</tr>
+<tr>
+<td><strong>合計（質問データに収録）</strong></td>
+<td style="text-align: right;"><strong>3295</strong></td>
+</tr>
+</tbody>
+</table>
+<p>※その他の1,763件は個別具体・会話断片が大半のため、質問データには収録せず件数のみ報告。分岐としては交通整理フロー1本（束 X-01）で受ける設計。</p>
+<h2>除外したもの（黙って捨てず件数を明示）</h2>
+<ul>
+<li>元データ総行数: <strong>5948件</strong></li>
+<li>noise（スタンプ/URLのみ/お礼・相槌・完了報告のみ）: <strong>890件</strong> → 質問でないため除外</li>
+<li>「その他」のうち束に昇格しなかったもの: <strong>1763件</strong> → 個別具体・会話断片が大半。全て💬その他の交通整理フロー（束 X-01）で受ける設計。行は渡さず件数のみ報告</li>
+<li>収録: <strong>3295件</strong>（昇格9パターン含む）</li>
+</ul>
+<h2>読み方の注意</h2>
+<ul>
+<li>質問の束への割当は<strong>キーワードによる機械分類（未検品）</strong>です。個々の行に誤分類が混ざり得ます。境界の判定（どの言い回しをどの分岐に落とすか）の最終設計は、質問データを眺めながら調整してください。</li>
+<li>質問原文の受講生名・スタッフ名は「◯◯」にマスク済み。</li>
+<li>回答本文の正本は <code>branching_answers.md</code>（V3・v9準拠）。本CSVはそこから束単位に展開したものです。</li>
+<li>共通体験ルール（v9・全分岐）: ①人へ渡す時は「整えてから」（【相談内容】【背景・状況】【してほしいこと】【これまでの経緯】の4項目に翻訳）②学習の中身→講師/手続き・トラブル→サポート ③人へ繋ぐ瞬間は必ず「24時間以内に返事くるよ」④解決したら「次のアクションに戻ろう」と学習に戻す ⑤トンマナ=スキルプラスくん準拠（タメ口＋絵文字。支払い・解約・不信だけ丁寧め）</li>
+</ul>
+<h2>菅さんに確認したいこと</h2>
+<ol>
+<li><strong>学習系②講義・④案件の固定回答化の範囲</strong>: LLMなしだと中身の回答を全部は固定化できない。頻出定型のみ固定回答＋残りは講師繋ぎフロー直行、で良いか（当方の推し）。</li>
+<li><strong>添削の返し手・成果物の受け渡し導線</strong>: ✍️学習③の一次添削は誰が返すか。画像/動画/URLをどう受け渡すか。</li>
+<li><strong>📂資料④の即答可否</strong>: v9は正確性優先でサポート寄せだが、アーカイブ場所/公開時期/ワークシート提出は即答候補あり（マスターに併記）。即答にするか。</li>
+<li><strong>面談(1on1)導線の位置</strong>: 学習①の不安時・学習④の個別案件から面談予約へ繋ぐか。</li>
+<li><strong>データ形式</strong>: このCSV構成で取り込みやすいか。列の追加・変更の要望があれば対応します。</li>
+</ol>
+<h2>〔要確認〕＝運営裏取り待ち（確定までは記載どおり暫定）</h2>
+<p>①全コース一括解放リンクURL ②面談入室リンクの正規導線 ③受講期間・契約更新の仕様 ④毎月の少額引落（例:2,900円）の名目 ⑤教材・コースの場所 ⑥特典の受け取り導線 ⑦LINE友だち追加URL/QR</p></main>
+</div></body></html>
