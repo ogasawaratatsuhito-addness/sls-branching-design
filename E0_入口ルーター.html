@@ -137,6 +137,7 @@ mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
 <h2>自由入力のキーワード判定表（E0-010用）</h2>
 <blockquote>
 <p>根拠: 全期間の実質問5,058件のキーワード分類（<code>../classify_branching.py</code>と同じ優先順位＝<strong>具体的な相談を先に判定</strong>）。判定した後は必ずE0-011で本人確認するので、誤判定はユーザーが直せる。</p>
+<p>v3変更: <strong>ツール名（claude等）をS1のエラー語より先に判定</strong>する（「claudeでエラーが出る」は講義相談G2が正解のため）。<strong>メールアドレス変更などの「登録内容を変えたい」系はS1→S3へ移動</strong>（症状=S1／手続き=S3の棲み分け。正本=<code>03_条件分岐ツリー.md</code>§棲み分け）。</p>
 </blockquote>
 <table>
 <thead>
@@ -155,35 +156,40 @@ mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
 <tr>
 <td style="text-align: right;">2</td>
 <td>S3 支払い・契約</td>
-<td>解約, 退会, 休会, 返金, 引き落と, 引落, 支払, 料金, 受講料, 月額, 請求, 契約, クレジット, クレカ, 分割, 決済, 領収, インボイス, クーリングオフ, 受講期間, 保証期間, 更新, プラン変更, 詐欺, 弁護士</td>
+<td>解約, 退会, 休会, 返金, 引き落と, 引落, 支払, 料金, 受講料, 月額, 請求, 契約, クレジット, クレカ, 分割, 決済, 領収, インボイス, クーリングオフ, 受講期間, 保証期間, 更新, プラン変更, 詐欺, 弁護士, メールアドレス変更, 登録情報, 名義変更</td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td>S1 エラー・不具合</td>
-<td>ログイン, 真っ白, 419, パスワード, 再生でき, 音が出ない, フリーズ, ロック, 解放, 解除, 招待コード, サポートくん, network error, 表示されない, 見れません, 開けません, 反映されない, バグ, 不具合, エラー, アカウント, メールアドレス変更, 認証コード, 届かない</td>
+<td>G2 講義の内容（ツール名）</td>
+<td>claude, クロード, cursor, codex, api, mcp, dify, n8n, gas, python, github, chatgpt, gpt, gemini, canva, notion, チャットボット, ai社員, エージェント, プロンプト</td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
+<td>S1 エラー・不具合</td>
+<td>ログイン, 真っ白, 419, パスワード, 再生でき, 音が出ない, フリーズ, ロック, 解放, 解除, 招待コード, サポートくん, network error, 表示されない, 見れません, 開けません, 反映されない, バグ, 不具合, エラー, アカウント, 認証コード, 届かない</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
 <td>S2 予約</td>
 <td>予約, 面談, 1on1, オリエン, 日程, リスケ, キャンセル, zoom, ズーム, 入室, 参加リンク, 申し込み, 申込, 締切, 何時から, 開催, 参加したい, コンサル, ブートキャンプ, 勉強会, 合宿</td>
 </tr>
 <tr>
-<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
 <td>S4 資料の場所</td>
 <td>アーカイブ, 録画, 見逃し, 保管庫, 資料, 教材, どこで見, どこから見, 場所, 特典, ワークシート, 提出, ダウンロード, どこにあり, どこですか, 視聴, オープンチャット, オプチャ, リッチメニュー, リンク教え</td>
 </tr>
 <tr>
-<td style="text-align: right;">6</td>
-<td>G2 講義の内容</td>
-<td>claude, クロード, cursor, codex, api, mcp, dify, n8n, gas, python, github, chatgpt, gpt, gemini, canva, notion, チャットボット, ai社員, エージェント, プロンプト, 自動化, 画像生成, 動画生成, html, コード, 動きません, 動かない, 実行できない, インストール, デプロイ</td>
+<td style="text-align: right;">7</td>
+<td>G2 講義の内容（その他）</td>
+<td>自動化, 画像生成, 動画生成, html, コード, 動きません, 動かない, 実行できない, インストール, デプロイ</td>
 </tr>
 <tr>
-<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
 <td>G4 案件</td>
 <td>案件, 受注, 納品, クライアント, お客様, 見積, 提案, 営業, 応募, マネタイズ, 稼げ, 稼ぐ, 収益, 報酬, 単価, クラウドワークス, ココナラ, ランサーズ, スカウト, sns運用, 集客</td>
 </tr>
 <tr>
-<td style="text-align: right;">8</td>
+<td style="text-align: right;">9</td>
 <td>G1 進め方</td>
 <td>何から, どう進め, 進め方, 順番, ペース, 方向性, 迷って, 相談したい, どのコース, コース選, 最初に, カリキュラム, ロードマップ, ゴール設定, 目標設定, 次は何, 再開, 復帰, モチベ, 挫折</td>
 </tr>
