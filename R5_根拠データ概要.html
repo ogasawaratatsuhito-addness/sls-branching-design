@@ -102,7 +102,7 @@ mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
 </tr>
 <tr>
 <td><code>菅さん共有_質問データ.csv</code></td>
-<td>1行=1質問（全3295件・束IDで紐づく）</td>
+<td>1行=1質問（全2721件・束IDで紐づく）</td>
 <td><strong>各分岐に実際に来る質問の生の言い回し</strong>。分岐の文言設計・判定キーワード設計の材料</td>
 </tr>
 <tr>
@@ -123,35 +123,35 @@ mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
 <tbody>
 <tr>
 <td>🧭学習① これからの進め方</td>
-<td style="text-align: right;">163</td>
+<td style="text-align: right;">136</td>
 </tr>
 <tr>
 <td>📘学習② 講義の内容で分からない</td>
-<td style="text-align: right;">311</td>
+<td style="text-align: right;">245</td>
 </tr>
 <tr>
 <td>✍️学習③ 作ったものを添削してほしい</td>
-<td style="text-align: right;">268</td>
+<td style="text-align: right;">203</td>
 </tr>
 <tr>
 <td>💼学習④ 案件・お客様対応の相談</td>
-<td style="text-align: right;">309</td>
+<td style="text-align: right;">242</td>
 </tr>
 <tr>
 <td>🛠️サービス① エラー・不具合</td>
-<td style="text-align: right;">363</td>
+<td style="text-align: right;">336</td>
 </tr>
 <tr>
 <td>📅サービス② 予約の確認・変更</td>
-<td style="text-align: right;">842</td>
+<td style="text-align: right;">741</td>
 </tr>
 <tr>
 <td>💳サービス③ お支払い・ご契約</td>
-<td style="text-align: right;">666</td>
+<td style="text-align: right;">506</td>
 </tr>
 <tr>
 <td>📂サービス④ 資料・アーカイブ・特典の場所</td>
-<td style="text-align: right;">373</td>
+<td style="text-align: right;">312</td>
 </tr>
 <tr>
 <td>💬その他のご相談</td>
@@ -159,7 +159,7 @@ mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
 </tr>
 <tr>
 <td><strong>合計（質問データに収録）</strong></td>
-<td style="text-align: right;"><strong>3295</strong></td>
+<td style="text-align: right;"><strong>2721</strong></td>
 </tr>
 </tbody>
 </table>
@@ -169,7 +169,8 @@ mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
 <li>元データ総行数: <strong>5948件</strong></li>
 <li>noise（スタンプ/URLのみ/お礼・相槌・完了報告のみ）: <strong>890件</strong> → 質問でないため除外</li>
 <li>「その他」のうち束に昇格しなかったもの: <strong>1763件</strong> → 個別具体・会話断片が大半。全て💬その他の交通整理フロー（束 X-01）で受ける設計。行は渡さず件数のみ報告</li>
-<li>収録: <strong>3295件</strong>（昇格9パターン含む）</li>
+<li><strong>重複除去: 554件</strong>（正規化一致=同一発言。最初の1件を残し「同一質問の件数」列に集約）＋レビューによる追加除去 20件</li>
+<li>収録: <strong>2721件</strong>（昇格9パターン含む・重複除去後）</li>
 </ul>
 <h2>読み方の注意</h2>
 <ul>
