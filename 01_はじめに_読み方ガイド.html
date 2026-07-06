@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>👋 はじめに（読み方） ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="01_はじめに_読み方ガイド.html" class="active">👋 はじめに（読み方）</a>
+<a href="99_定例で決めたいこと.html">✅ 定例で決めたいこと</a>
+<a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a></nav>
+<main><h1>はじめに ｜ この資料の読み方（初見の方向け・5分）</h1>
+<h2>これは何？（30秒）</h2>
+<p><strong>スキルプラスくん「質問する」を押したあとの体験を、そのまま実装できるレベルまで落とした設計書</strong>です。</p>
+<ul>
+<li>体験の正本は <strong>「理想の体験像 v9」</strong>（2026-06-09 小澤さんが開発チームへ共有済み）。本資料はそのv9を、<strong>LLMを使わない条件分岐</strong>として詳細化したものです。</li>
+<li>役割分担: <strong>条件分岐の設計（フロー・文言・遷移）＝小笠原 ／ UI実装＝菅さん</strong></li>
+<li>この資料に<strong>GOが出たら、菅さんが実装に着手できる</strong>状態を目指しています。</li>
+</ul>
+<h2>全体像（この1枚だけ覚えればOK）</h2>
+<p>受講生の「困った」は、必ずこの流れで処理されます。</p>
+<p><div class="mermaid">flowchart LR
+    A["受講生<br>『どうしました?』"] --> B["🚪 E0 入口<br>メニュー or 自由入力"]
+    B --> C["9つの相談に分岐<br>🧭📘✍️💼 学習系4つ<br>🛠️📅💳📂 サービス系4つ＋💬その他"]
+    C --> D1["その場で解決<br>（解けるものは自己解決）"]
+    C --> D2["講師に繋ぐ<br>（学習の中身）"]
+    C --> D3["サポートに繋ぐ<br>（手続き・トラブル）"]
+    D1 --> E["🎯 必ず『次のアクションに戻ろう』<br>と学習に送り出す"]
+    D2 --> E
+    D3 --> E
+</div></p>
+<p>全分岐に共通するルールは4つだけ（詳細=<code>00_共通仕様.md</code>）:</p>
+<table>
+<thead>
+<tr>
+<th>ルール</th>
+<th>中身</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔁 整えてから渡す</td>
+<td>人に繋ぐ時は、受講生の生の言葉を4項目（相談内容/背景/してほしいこと/経緯）に翻訳してから渡す</td>
+</tr>
+<tr>
+<td>🚦 繋ぎ先の使い分け</td>
+<td>学習の中身→<strong>講師</strong> ／ 手続き・トラブル→<strong>サポート</strong></td>
+</tr>
+<tr>
+<td>⏱ 待ち時間を伝える</td>
+<td>人に繋ぐ瞬間、必ず「<strong>24時間以内に返事くるよ</strong>」</td>
+</tr>
+<tr>
+<td>🙂 トンマナ統一</td>
+<td>既存スキルプラスくん準拠（タメ口＋絵文字）。💳支払い・解約・不信だけ丁寧め</td>
+</tr>
+</tbody>
+</table>
+<h2>何を根拠に作ったか</h2>
+<p><strong>サポートLINE全期間の実際の質問 5,948件</strong>（2025-04〜2026-06）を分類したデータです。</p>
+<ul>
+<li>9相談 → さらに<strong>53の束</strong>（＝同じ返しで対応できる質問のかたまり）に細分化。各分岐の選択肢・文言・キーワード判定はすべてこのデータに基づいています。</li>
+<li>件数の実態: 最多は📅予約842件 → 💳支払い666件 → 🛠️エラー363件。<strong>最頻の予約・支払いは「人に繋ぐ」が正解の相談</strong>なので、自動即答ではなく「情報を集めて整えて渡す」設計にしています。</li>
+</ul>
+<h2>各相談ページの読み方（1分）</h2>
+<p>全ページ同じ構成です: <strong>設計方針 → フロー図 → ノード定義 → キーワード判定表 → 〔要確認〕 → UI申し送り</strong></p>
+<p>心臓部は「ノード定義」の表。1行=画面に出る1ステップです。</p>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>意味</th>
+<th>例（S1エラーの解決確認ノード）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ノードID</td>
+<td>ステップの名前。遷移先の指定に使う</td>
+<td><code>S1-200</code></td>
+</tr>
+<tr>
+<td>種別</td>
+<td>MSG=botの発話 / CHOICE=ボタン / INPUT=自由入力 / ATTACH=添付 / HANDOFF=人へ送信 / END=終了</td>
+<td>CHOICE</td>
+</tr>
+<tr>
+<td>文言／処理</td>
+<td><strong>そのまま実装に載せられる確定文</strong>。未確定の事実だけ〔要確認〕と明示（ダミーは書いてない）</td>
+<td>「試してみてどうかな？ 1️⃣直った！ 2️⃣まだダメ…」</td>
+</tr>
+<tr>
+<td>遷移</td>
+<td>選択肢ごとの次のノード</td>
+<td>1→S1-210（送り出し）／ 2→S1-300（聞き取り）</td>
+</tr>
+</tbody>
+</table>
+<h2>おすすめの見る順（定例用・計10分）</h2>
+<ol>
+<li><strong>このページ</strong>（5分）← いまここ</li>
+<li><strong><code>S1_サービス①エラー・不具合</code></strong>（5分）… 代表例。「その場で解決→ダメなら聞き取り→人へ」の全パターンの型が1ページに揃っています。<strong>S1が読めれば残り8相談も同じ型</strong>です</li>
+<li>気になる相談だけ拾い読み</li>
+<li><strong><code>99_定例で決めたいこと</code></strong> … GOの定義と、この場で決めたい論点</li>
+</ol>
+<h2>よくある質問（先回り）</h2>
+<ul>
+<li><strong>Q. AIで答えないの？</strong> — v9の方針で、LLMなしの条件分岐で作ります。ただし将来AI化する枠は「回答スロット」（G2/G4の定型回答・S4の即答）として<strong>差し替え可能な形</strong>で設計してあり、後からAIに置き換えられます。</li>
+<li><strong>Q. 文言はこれで確定？</strong> — トンマナ込みの確定文として書いてあります。ただし実装後も文言は運用で磨く前提（スロット化してあるので差し替え可能）。</li>
+<li><strong>Q. 自由入力はどう捌く？</strong> — キーワード判定→「もしかして◯◯の相談かな？」と<strong>必ず本人に確認</strong>してから分岐します。誤判定はユーザー自身が直せるので、LLMなしでも破綻しません。</li>
+</ul></main>
+</div></body></html>
