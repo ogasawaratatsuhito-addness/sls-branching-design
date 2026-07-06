@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🌳 条件分岐ツリー ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+nav .navsec{font-size:10.5px;color:#8E9AB8;margin:14px 0 4px;padding-left:10px;letter-spacing:.1em}
+.dlbtn{display:inline-block;background:var(--navy);color:#fff!important;font-size:11.5px;padding:3px 12px;border-radius:99px;text-decoration:none}
+.dlbtn:hover{background:var(--coral)}
+.chat{display:flex;flex-direction:column;background:#DDE6F2;border-radius:16px;padding:20px 18px;margin:16px 0;max-width:660px}
+.chat .b{max-width:80%;padding:10px 14px;border-radius:15px;margin:5px 0;font-size:13.5px;line-height:1.65;white-space:pre-wrap;box-shadow:0 1px 2px rgba(30,42,68,.12)}
+.chat .bot{background:#fff;align-self:flex-start;border-top-left-radius:4px}
+.chat .user{background:#9FE870;align-self:flex-end;border-top-right-radius:4px}
+.chat .nid{font-size:10.5px;color:#51618A;align-self:flex-start;margin:2px 0 0 6px;font-family:monospace}
+.chat .sys{font-size:11.5px;color:#51618A;align-self:center;margin:10px 0;background:#CBD8EA;padding:2px 14px;border-radius:99px}
+.handoff{background:#FFF6E4;border:1.5px dashed #D9A441;border-radius:12px;padding:12px 16px;margin:10px 0;font-size:12.5px;max-width:660px}
+.handoff .ht{font-weight:700;color:#8A6210;margin-bottom:6px;font-size:12px}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="01_はじめに_読み方ガイド.html">👋 はじめに（読み方）</a>
+<a href="02_体験デモ_会話例.html">💬 体験デモ（会話例）</a>
+<a href="03_条件分岐ツリー.html" class="active">🌳 条件分岐ツリー</a>
+<a href="99_定例で決めたいこと.html">✅ 定例で決めたいこと</a>
+<a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a>
+<div class="navsec">参照元資料（正本）</div>
+<a href="R1_体験像v9.html">📜 体験像 v9（最上位正本）</a>
+<a href="R2_10問診断_質問項目.html">📝 10問診断 質問項目（正本）</a>
+<a href="R3_コース条件分岐ロジックv1.html">🧮 コース分岐ロジック v1（正本）</a>
+<a href="R4_v9対応表_共通ルール.html">🔗 v9↔9相談 対応表</a>
+<a href="R5_根拠データ概要.html">📊 根拠データの概要</a>
+<div class="navsec">データ（CSV）</div>
+<a href="R6_条件分岐マスターCSV.html">🗂 条件分岐マスター（CSV）</a>
+<a href="R7_質問データCSV.html">🗒 質問データ（公開用CSV）</a></nav>
+<main><h1>条件分岐ツリー ｜ 9相談×選択肢のMECE分解（分岐だけを一望する）</h1>
+<p>作成: 2026-07-06 ／ 体験像の正本=<code>../sls_question_entry_v9.md</code>（v9） ／ ノード定義の正本=<code>E0_入口ルーター.md</code>・各相談ファイル（G1〜X）<br />
+役割: <strong>「どこで・何の選択肢を出し・どこに落ちるか」だけ</strong>を1ファイルで一望できるようにした文書。個々のノードの確定文言・キーワード判定表・HANDOFFテンプレは各相談ファイルが正本。</p>
+<blockquote>
+<p>凡例（終端の4タイプ）:<br />
+🤖 <strong>その場解決</strong> … botの案内で解決→学習へ送り出し ／ 🧮 <strong>診断</strong> … 10問診断→コース提示（その場解決の特殊形）<br />
+👤 <strong>講師へ</strong> … 整えて講師に渡す・24時間以内 ／ 👤 <strong>サポートへ</strong> … 整えてサポートに渡す・24時間以内<br />
+件数=実質質問5,058件（全期間）の束別内訳。束ID・件数は各相談ファイルの「根拠データ」表に準拠（<code>../菅さん共有_条件分岐マスター.csv</code> の53束と束名で対応。採番順は異なる場合あり）</p>
+</blockquote>
+<hr />
+<h2>分解の原則（この文書の設計判断）</h2>
+<ol>
+<li><strong>大項目9つ＝v9で固定</strong>。増やさない・減らさない・言い換えない。</li>
+<li><strong>下層の分解単位＝「同じ返しで対応できる束」</strong>（全53束）。返し（回答・聞き取り・繋ぎ先）が同じなら選択肢を分けず、返しが変わるところでだけ選択肢を切る。</li>
+<li><strong>選択肢は最大6±2個・頻度順が基本</strong>。例外は2つ——(a) 一次対応を持つ症状を上に集める（S1）、(b) センシティブ相談を上に固定する（S3）。</li>
+<li><strong>必ず「その他・どれでもない」の受け皿を置く</strong>＝MECEの「漏れなく」をデータでなく構造で担保する。受け皿には受け皿以外の束を混ぜない（純度を保つ）。</li>
+<li><strong>ダブり（複数に読める質問）の判定ルール</strong>: 自由入力は「具体的な相談を先に判定」の先勝ち（E0-010判定表の優先順位）＋判定後に必ず本人確認（E0-011）。ボタン選択は受講生の自己申告なのでダブりは本人が解消する。束をまたぐ質問は「より事故リスクが高い側」に寄せる（例: 「解約したいけどエラーも出てる」→S3支払い・契約）。</li>
+<li><strong>深さは最大3層</strong>（選択肢を提示する階層のみ数える。入口の「今この○○の話だよね？」確認と聞き取りINPUTは層に数えない）。3層で解決に届かないものは粘らず人へ渡す。</li>
+<li><strong>終端は必ず締める</strong>: 🤖解決なら「次のアクションに戻ろう」の送り出し、👤人に渡すなら「24時間以内に返事くるよ」（v9共通ルール）。</li>
+</ol>
+<hr />
+<h2>全体ツリー（入口 → 9相談 → 終端タイプ）</h2>
+<p><div class="mermaid">flowchart LR
+    E0["🚪 入口 E0-000<br>どうしました？😊<br>9相談メニュー＋自由入力<br>（自由入力はキーワード判定→本人確認）"]
+    SHIND["🧮 10問診断<br>→ 次の1コース提示"]
+    SOLVE["🤖 その場解決<br>→ 学習へ送り出し"]
+    KOSHI["👤 講師へ<br>整えて渡す・24時間以内"]
+    SUP["👤 サポートへ<br>整えて渡す・24時間以内"]
+
+    E0 -->|"1️⃣"| G1["🧭 学習① 進め方<br>163件"]
+    E0 -->|"2️⃣"| G2["📘 学習② 講義<br>311件"]
+    E0 -->|"3️⃣"| G3["✍️ 学習③ 添削<br>268件"]
+    E0 -->|"4️⃣"| G4["💼 学習④ 案件<br>309件"]
+    E0 -->|"5️⃣"| S1["🛠️ サービス① エラー<br>363件"]
+    E0 -->|"6️⃣"| S2["📅 サービス② 予約<br>842件"]
+    E0 -->|"7️⃣"| S3["💳 サービス③ 支払い・契約<br>666件"]
+    E0 -->|"8️⃣"| S4["📂 サービス④ 資料の場所<br>373件"]
+    E0 -->|"9️⃣"| X["💬 その他<br>1,763件"]
+
+    G1 --> SHIND
+    SHIND -->|"進む！"| SOLVE
+    SHIND -.->|"不安・相談したい"| SUP
+    G2 -->|"定型回答で解決"| SOLVE
+    G2 -.->|"未解決"| KOSHI
+    G3 -->|"全件（添削は人が返す）"| KOSHI
+    G4 -->|"一般論で解決"| SOLVE
+    G4 -.->|"未解決・個別具体"| KOSHI
+    S1 -->|"一次対応で解決"| SOLVE
+    S1 -.->|"未解決"| SUP
+    S2 -->|"入室リンクのみ即答"| SOLVE
+    S2 -->|"原則全件"| SUP
+    S3 -->|"全件（必ず人）"| SUP
+    S4 -->|"即答スロットで解決"| SOLVE
+    S4 -.->|"未解決・その他"| SUP
+    X -.->|"迷子は各相談へ合流"| E0
+    X -->|"話せてスッキリ"| SOLVE
+    X -->|"共有してほしい"| SUP
+</div></p>
+<h3>9相談サマリー（選択肢数・深さ・終端）</h3>
+<table>
+<thead>
+<tr>
+<th>相談</th>
+<th style="text-align: right;">件数</th>
+<th>層1の選択肢</th>
+<th>最大深さ</th>
+<th>終端の内訳</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🧭 学習① 進め方</td>
+<td style="text-align: right;">163</td>
+<td>なし（全員🧮診断へ）→提示後3択</td>
+<td>1層</td>
+<td>🤖コース追加 ／ 👤サポート（不安時のみ）</td>
+</tr>
+<tr>
+<td>📘 学習② 講義</td>
+<td style="text-align: right;">311</td>
+<td>テーマ6択</td>
+<td>3層</td>
+<td>🤖定型回答 ／ 👤講師</td>
+</tr>
+<tr>
+<td>✍️ 学習③ 添削</td>
+<td style="text-align: right;">268</td>
+<td>（成果物受領後）6択</td>
+<td>1層</td>
+<td>👤講師/CS（全件）</td>
+</tr>
+<tr>
+<td>💼 学習④ 案件</td>
+<td style="text-align: right;">309</td>
+<td>テーマ5択</td>
+<td>3層</td>
+<td>🤖定型回答 ／ 👤講師</td>
+</tr>
+<tr>
+<td>🛠️ サービス① エラー</td>
+<td style="text-align: right;">363</td>
+<td>症状8択</td>
+<td>2層</td>
+<td>🤖一次対応 ／ 👤サポート</td>
+</tr>
+<tr>
+<td>📅 サービス② 予約</td>
+<td style="text-align: right;">842</td>
+<td>何の予約4択</td>
+<td>2層</td>
+<td>👤サポート（入室リンクのみ🤖）</td>
+</tr>
+<tr>
+<td>💳 サービス③ 支払い・契約</td>
+<td style="text-align: right;">666</td>
+<td>テーマ6択</td>
+<td>1層</td>
+<td>👤サポート（全件・必ず人）</td>
+</tr>
+<tr>
+<td>📂 サービス④ 資料の場所</td>
+<td style="text-align: right;">373</td>
+<td>探しもの7択</td>
+<td>2層</td>
+<td>🤖即答スロット ／ 👤サポート</td>
+</tr>
+<tr>
+<td>💬 その他</td>
+<td style="text-align: right;">1,763</td>
+<td>自由入力→判定→確認</td>
+<td>2層</td>
+<td>合流（各相談へ） ／ 🤖受け止め ／ 👤サポート</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>🧭 学習① これからの進め方を相談したい（G1・163件）</h2>
+<p><strong>分岐の考え方</strong>: この相談は「何を聞かれても10問診断に乗せる」設計（6束163件すべて同じ返し＝診断フロー）。だから入口に選択肢を置かず、<strong>分岐は診断の後ろに1つだけ</strong>。</p>
+<p><div class="mermaid">flowchart TD
+    A["G1-000 進め方の相談だね、一緒に整理しよう😊"] --> Q["🧮 G1-101〜110<br>10問診断を1問ずつ（情報収集・層に数えない）"]
+    Q --> P["G1-200 今のあなたには、まず「○○コース」がおすすめ✨"]
+    P --> C{"G1-201 このコースで進んでみる？"}
+    C -->|"1️⃣ 進む！"| Z1["🤖 G1-210 コース追加リンク<br>→ 最初のアクションへ送り出し"]
+    C -->|"2️⃣ もう一回答え直す"| Q
+    C -->|"3️⃣ ちょっと不安／相談したい"| H["👤 G1-300→G1-400<br>聞き取り→サポートへ（24時間以内）"]
+</div></p>
+<table>
+<thead>
+<tr>
+<th>階層</th>
+<th>選択肢の文言（ボタン）</th>
+<th>対応する束ID・件数</th>
+<th>終端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1（G1-201）</td>
+<td>1️⃣ 進む！</td>
+<td>全6束共通（G1-01 どのコース/再開/プラン 85 ／ G1-02 ゴール設定・目標設定 27 ／ G1-03 進め方・ペース・カリキュラム 24 ／ G1-04 方向性・迷い・相談 17 ／ G1-06 何から始める/順番 5）</td>
+<td>🤖 コース追加→送り出し</td>
+</tr>
+<tr>
+<td>1（G1-201）</td>
+<td>2️⃣ もう一回答え直す</td>
+<td>同上</td>
+<td>🧮 診断へ戻る</td>
+</tr>
+<tr>
+<td>1（G1-201）</td>
+<td>3️⃣ ちょっと不安／相談したい</td>
+<td>同上＋G1-05 束外 5</td>
+<td>👤 サポートへ</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MECEの根拠</strong>: 6束163件（85+27+24+17+5+5=163）はすべて「診断→コース提示」という同一の返しで対応できるため下層分解しない（原則2）。受け皿=3️⃣「不安／相談したい」で、診断に乗らない相談（束外含む）も漏れなく人へ届く。</p>
+<hr />
+<h2>📘 学習② 講義の内容で分からない（G2・311件）</h2>
+<p><strong>分岐の考え方</strong>: テーマ（ツール群）ごとに定型回答スロットを分ける＝返しが変わる単位で6択。解決確認→一度だけ粘る→講師、の3層で必ず終端に届く。</p>
+<p><div class="mermaid">flowchart TD
+    A{"G2-000 今この「○○」の話だよね？"} -->|"1️⃣ そう！"| B{"G2-100 どこが分からない？"}
+    A -->|"2️⃣ ちがう話"| E0["🚪 E0-020 メニューへ"]
+    B -->|"1️⃣ Claude Code / Cursor / Codex"| C1["🤖 G2-111 定型回答スロット"]
+    B -->|"2️⃣ Dify・チャットボット・AIエージェント"| C2["🤖 G2-112 定型回答スロット"]
+    B -->|"3️⃣ ChatGPT / Gemini / Canva などのツール"| C3["🤖 G2-113 定型回答スロット"]
+    B -->|"4️⃣ API・MCP・連携（GAS/GitHubなど）"| C4["🤖 G2-114 定型回答スロット"]
+    B -->|"5️⃣ プロンプト・操作・考え方"| C5["🤖 G2-115 定型回答スロット"]
+    B -->|"6️⃣ その他"| F["G2-300 聞き取り<br>①何をしたい ②どこで詰まってる"]
+    C1 & C2 & C3 & C4 & C5 --> D{"G2-200 これで解決した？"}
+    D -->|"1️⃣ 解決した！"| S["🤖 G2-210 送り出し→学習へ"]
+    D -->|"2️⃣ まだ分からない…"| P["G2-201 もしかして、こういうこと？<br>（一度だけ粘る）"]
+    P --> D2{"G2-202 どうかな？"}
+    D2 -->|"1️⃣ 解決した！"| S
+    D2 -->|"2️⃣ まだ…"| F
+    F --> H["👤 G2-400 講師へ（24時間以内）"]
+</div></p>
+<table>
+<thead>
+<tr>
+<th>階層</th>
+<th>選択肢の文言（ボタン）</th>
+<th>対応する束ID・件数</th>
+<th>終端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1（G2-100）</td>
+<td>1️⃣ Claude Code / Cursor / Codex</td>
+<td>G2-01 164</td>
+<td>🤖定型回答 → 未解決なら👤講師</td>
+</tr>
+<tr>
+<td>1（G2-100）</td>
+<td>2️⃣ Dify・チャットボット・AIエージェント</td>
+<td>G2-03 31</td>
+<td>🤖定型回答 → 未解決なら👤講師</td>
+</tr>
+<tr>
+<td>1（G2-100）</td>
+<td>3️⃣ ChatGPT / Gemini / Canva などのツール</td>
+<td>G2-04 30</td>
+<td>🤖定型回答 → 未解決なら👤講師</td>
+</tr>
+<tr>
+<td>1（G2-100）</td>
+<td>4️⃣ API・MCP・連携（GAS/GitHubなど）</td>
+<td>G2-05 19</td>
+<td>🤖定型回答 → 未解決なら👤講師</td>
+</tr>
+<tr>
+<td>1（G2-100）</td>
+<td>5️⃣ プロンプト・操作・考え方</td>
+<td>G2-06 14</td>
+<td>🤖定型回答 → 未解決なら👤講師</td>
+</tr>
+<tr>
+<td>1（G2-100）</td>
+<td>6️⃣ その他</td>
+<td>G2-02 束外 48 ＋ G2-07 技術エラー 5</td>
+<td>👤講師（聞き取り直行）</td>
+</tr>
+<tr>
+<td>2（G2-200）</td>
+<td>1️⃣ 解決した！ ／ 2️⃣ まだ分からない…</td>
+<td>—</td>
+<td>🤖送り出し ／ 粘りへ</td>
+</tr>
+<tr>
+<td>3（G2-202）</td>
+<td>1️⃣ 解決した！ ／ 2️⃣ まだ…</td>
+<td>—</td>
+<td>🤖送り出し ／ 👤講師</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MECEの根拠</strong>: 7束311件（164+48+31+30+19+14+5=311）を、定型スロットを持てる5テーマ＋受け皿6️⃣で全カバー。技術エラー（5件）は定型で答えると事故りやすいため受け皿側=講師直行に寄せる（判定ルール: 「ツール名が特定できる質問はテーマへ、できない質問は6️⃣へ」）。</p>
+<hr />
+<h2>✍️ 学習③ 作ったものを添削してほしい（G3・268件）</h2>
+<p><strong>分岐の考え方</strong>: 添削は人が返す＝<strong>全件👤講師/CS</strong>で分岐なし。選択肢は「どこを見てほしいか」の言語化を助けるためだけに置く（終端は全部同じ）。</p>
+<p><div class="mermaid">flowchart TD
+    A{"G3-000 今この「○○」の話だよね？"} -->|"1️⃣ そう！"| B["G3-100 作ったもの、見せて〜！😊<br>画像・動画・資料・テキスト・URLどれでもOK"]
+    A -->|"2️⃣ ちがう話"| E0["🚪 E0-020 メニューへ"]
+    B --> C{"G3-200 特にどこを見てほしい？<br>なにか不安なところある？"}
+    C -->|"1️⃣ ポートフォリオ（全体の見栄え・構成）"| H
+    C -->|"2️⃣ 提案文・プロフィール（通過率・信頼感）"| H
+    C -->|"3️⃣ 記事・文章（内容・構成）"| H
+    C -->|"4️⃣ アプリ・ツール・制作物（動作・使いやすさ）"| H
+    C -->|"5️⃣ 見てほしい点を自分で書く"| I["INPUT 自由入力"] --> H
+    C -->|"6️⃣ とりあえず全体を見て！"| H["👤 G3-400 今のアクションの<br>添削担当（講師/CS）へ（24時間以内）"]
+</div></p>
+<table>
+<thead>
+<tr>
+<th>階層</th>
+<th>選択肢の文言（ボタン）</th>
+<th>対応する束ID・件数</th>
+<th>終端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1（G3-200）</td>
+<td>1️⃣ ポートフォリオ（全体の見栄え・構成）</td>
+<td>G3-01 175</td>
+<td>👤講師/CS</td>
+</tr>
+<tr>
+<td>1（G3-200）</td>
+<td>2️⃣ 提案文・プロフィール（通過率・信頼感）</td>
+<td>G3-03 8</td>
+<td>👤講師/CS</td>
+</tr>
+<tr>
+<td>1（G3-200）</td>
+<td>3️⃣ 記事・文章（内容・構成）</td>
+<td>G3-04 8</td>
+<td>👤講師/CS</td>
+</tr>
+<tr>
+<td>1（G3-200）</td>
+<td>4️⃣ アプリ・ツール・制作物（動作・使いやすさ）</td>
+<td>G3-05 3</td>
+<td>👤講師/CS</td>
+</tr>
+<tr>
+<td>1（G3-200）</td>
+<td>5️⃣ 見てほしい点を自分で書く</td>
+<td>束外の一部（見どころを言語化できる人）</td>
+<td>👤講師/CS</td>
+</tr>
+<tr>
+<td>1（G3-200）</td>
+<td>6️⃣ とりあえず全体を見て！</td>
+<td>G3-02 束外 74（言葉にできない人の逃げ道）</td>
+<td>👤講師/CS（「全体添削希望」と記録）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MECEの根拠</strong>: 5束268件（175+74+8+8+3=268）。どれを選んでも終端は同一（G3-400）なので「ダブり」はそもそも事故にならない——選択肢はHANDOFFの【してほしいこと】を埋める補助。受け皿=6️⃣「とりあえず全体を見て！」（束外74件＝2番目に大きい塊がここに入る実態に合わせた）。</p>
+<blockquote>
+<p>※既存G3-200（2択）からの再設計。詳細は文末「既存設計からの変更点」①。</p>
+</blockquote>
+<hr />
+<h2>💼 学習④ 案件・お客様対応の相談（G4・309件）</h2>
+<p><strong>分岐の考え方</strong>: 一般論で答えられるテーマ（探し方・マネタイズ・単価）は定型スロット、個別性が高いテーマ（クライアント対応・納品）は最初から講師直行。G2と同じ3層構造。</p>
+<p><div class="mermaid">flowchart TD
+    A{"G4-000 今この「○○」の話だよね？"} -->|"1️⃣ そう！"| B{"G4-100 どうした？くわしく教えて😊"}
+    A -->|"2️⃣ ちがう話"| E0["🚪 E0-020 メニューへ"]
+    B -->|"1️⃣ 案件の探し方・応募のしかた（媒体選びなど）"| C1["🤖 G4-111 定型回答スロット"]
+    B -->|"2️⃣ 収益化・マネタイズ・集客の考え方"| C2["🤖 G4-112 定型回答スロット"]
+    B -->|"3️⃣ 単価・見積・提案のしかた"| C3["🤖 G4-113 定型回答スロット"]
+    B -->|"4️⃣ クライアント対応・納品で困ってる"| F["G4-300 聞き取り<br>①いまの状況 ②どうしたい"]
+    B -->|"5️⃣ その他"| F
+    C1 & C2 & C3 --> D{"G4-200 これで解決した？"}
+    D -->|"1️⃣ 解決した！"| S["🤖 G4-210 送り出し→学習へ"]
+    D -->|"2️⃣ まだ…"| P["G4-201 もしかして、こういうこと？<br>（一度だけ粘る）"]
+    P --> D2{"G4-202 どうかな？"}
+    D2 -->|"1️⃣ 解決した！"| S
+    D2 -->|"2️⃣ まだ…"| F
+    F --> H["👤 G4-400 講師（アクション担当）へ（24時間以内）"]
+</div></p>
+<table>
+<thead>
+<tr>
+<th>階層</th>
+<th>選択肢の文言（ボタン）</th>
+<th>対応する束ID・件数</th>
+<th>終端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1（G4-100）</td>
+<td>1️⃣ 案件の探し方・応募のしかた（媒体選びなど）</td>
+<td>G4-01 169</td>
+<td>🤖定型回答 → 未解決なら👤講師</td>
+</tr>
+<tr>
+<td>1（G4-100）</td>
+<td>2️⃣ 収益化・マネタイズ・集客の考え方</td>
+<td>G4-02 85</td>
+<td>🤖定型回答 → 未解決なら👤講師</td>
+</tr>
+<tr>
+<td>1（G4-100）</td>
+<td>3️⃣ 単価・見積・提案のしかた</td>
+<td>G4-04 18</td>
+<td>🤖定型回答 → 未解決なら👤講師</td>
+</tr>
+<tr>
+<td>1（G4-100）</td>
+<td>4️⃣ クライアント対応・納品で困ってる</td>
+<td>G4-03 20</td>
+<td>👤講師（直行・個別性が高い）</td>
+</tr>
+<tr>
+<td>1（G4-100）</td>
+<td>5️⃣ その他</td>
+<td>G4-05 束外 17</td>
+<td>👤講師（聞き取り直行）</td>
+</tr>
+<tr>
+<td>2（G4-200）</td>
+<td>1️⃣ 解決した！ ／ 2️⃣ まだ…</td>
+<td>—</td>
+<td>🤖送り出し ／ 粘りへ</td>
+</tr>
+<tr>
+<td>3（G4-202）</td>
+<td>1️⃣ 解決した！ ／ 2️⃣ まだ…</td>
+<td>—</td>
+<td>🤖送り出し ／ 👤講師</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MECEの根拠</strong>: 5束309件（169+85+20+18+17=309）を5択で全カバー。受け皿=5️⃣その他。ダブり判定ルール: 「特定のクライアント・特定の案件が既にある話は4️⃣（人へ）、まだ無い一般論は1️⃣〜3️⃣」——事故リスクが高い側（個別具体）に寄せる。</p>
+<hr />
+<h2>🛠️ サービス① うまく動かない・エラーが出る（S1・363件）</h2>
+<p><strong>分岐の考え方</strong>: 一次対応（自己解決の定型手順）を持つ6症状を上に並べ、一次対応を持たないもの（メール・アカウント系＝本人確認が必要）と「どれでもない」は聞き取り直行。</p>
+<p><div class="mermaid">flowchart TD
+    A{"S1-000 いま何が起きてる？<br>近いものを選んでね👇"} -->|"1️⃣ コースがロックされてる・解放できない"| C1["🤖 S1-111 一次対応<br>（一括解放リンク案内）"]
+    A -->|"2️⃣ ログインできない・画面が真っ白"| C2["🤖 S1-121 一次対応<br>（PW再設定・キャッシュ削除）"]
+    A -->|"3️⃣ 動画が見れない・音が出ない"| C3["🤖 S1-131 一次対応<br>（再読込・音量・回線）"]
+    A -->|"4️⃣ なんでもサポートくんが動かない"| C4["🤖 S1-141 一次対応<br>（設問番号指定・再起動）"]
+    A -->|"5️⃣ 表示がおかしい・前と変わった・消えた"| C5["🤖 S1-151 一次対応<br>（画面更新の説明・再読込）"]
+    A -->|"6️⃣ LINEの友だち追加ができない"| C6["🤖 S1-161 一次対応<br>（再試行・アプリ更新・回線）"]
+    A -->|"7️⃣ メール・通知・アカウントのこと"| E["S1-300 聞き取り開始<br>①症状 ②スクショ必須 ③端末 ④ブラウザ"]
+    A -->|"8️⃣ どれでもない"| E
+    C1 & C2 & C3 & C4 & C5 & C6 --> D{"S1-200 試してみてどうかな？"}
+    D -->|"1️⃣ 直った！"| S["🤖 S1-210 送り出し→学習へ"]
+    D -->|"2️⃣ まだダメ…"| E
+    E --> H["👤 S1-400 サポート（技術窓口）へ（24時間以内）"]
+</div></p>
+<table>
+<thead>
+<tr>
+<th>階層</th>
+<th>選択肢の文言（ボタン）</th>
+<th>対応する束ID・件数</th>
+<th>終端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1（S1-000）</td>
+<td>1️⃣ コースがロックされてる・解放できない</td>
+<td>S1-01 115</td>
+<td>🤖一次対応 → 未解決なら👤サポート</td>
+</tr>
+<tr>
+<td>1（S1-000）</td>
+<td>2️⃣ ログインできない・画面が真っ白</td>
+<td>S1-02 82</td>
+<td>🤖一次対応 → 未解決なら👤サポート</td>
+</tr>
+<tr>
+<td>1（S1-000）</td>
+<td>3️⃣ 動画が見れない・音が出ない</td>
+<td>S1-04 41</td>
+<td>🤖一次対応 → 未解決なら👤サポート</td>
+</tr>
+<tr>
+<td>1（S1-000）</td>
+<td>4️⃣ なんでもサポートくんが動かない</td>
+<td>S1-06 22</td>
+<td>🤖一次対応 → 未解決なら👤サポート</td>
+</tr>
+<tr>
+<td>1（S1-000）</td>
+<td>5️⃣ 表示がおかしい・前と変わった・消えた</td>
+<td>S1-08 11</td>
+<td>🤖一次対応 → 未解決なら👤サポート</td>
+</tr>
+<tr>
+<td>1（S1-000）</td>
+<td>6️⃣ LINEの友だち追加ができない</td>
+<td>S1-07 19</td>
+<td>🤖一次対応 → 未解決なら👤サポート</td>
+</tr>
+<tr>
+<td>1（S1-000）</td>
+<td>7️⃣ メール・通知・アカウントのこと</td>
+<td>S1-03 49</td>
+<td>👤サポート（聞き取り直行・本人確認が必要）</td>
+</tr>
+<tr>
+<td>1（S1-000）</td>
+<td>8️⃣ どれでもない</td>
+<td>S1-05 束外 24</td>
+<td>👤サポート（聞き取り直行）</td>
+</tr>
+<tr>
+<td>2（S1-200）</td>
+<td>1️⃣ 直った！ ／ 2️⃣ まだダメ…</td>
+<td>—</td>
+<td>🤖送り出し ／ 👤サポート</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MECEの根拠</strong>: 8束363件（115+82+49+41+24+22+19+11=363）を8択で1:1カバー（束と選択肢が完全対応する唯一の相談）。受け皿=8️⃣どれでもない。並びは頻度順でなく「一次対応あり→なし」順（原則3の例外(a)。自己解決できるものを先に見せる）。</p>
+<hr />
+<h2>📅 サービス② 予約の確認・変更（S2・842件・全相談で最多）</h2>
+<p><strong>分岐の考え方</strong>: 予約の中身（空き枠・確定）はAIが触らない＝原則全件👤サポート。層1「何の予約か」×層2「やりたいこと」で聞き取りを構造化する。例外は「入室リンク」だけ一次案内（当日で急ぎが多いため）。</p>
+<p><div class="mermaid">flowchart TD
+    A{"S2-000 予約のことだね、まかせて！😊<br>まず、何の予約か教えてね👇"} -->|"1️⃣ 面談・1on1・コンサル"| B{"S2-100 やりたいことはどれ？"}
+    A -->|"2️⃣ セミナー・合宿・勉強会などのイベント"| B
+    A -->|"3️⃣ 入室のしかた・Zoomリンクが分からない"| L["🤖 S2-150 入室リンクの一次案内"]
+    A -->|"4️⃣ その他"| B
+    A -.->|"5️⃣ イベントの日時・締切を見る〔要確認: 正規導線〕"| EV["イベント情報ページへ誘導"]
+    B -->|"1️⃣ 新しく予約したい"| C["S2-300 聞き取り<br>①お名前 ②対象 ③希望日時"]
+    B -->|"2️⃣ 予約の確認"| C
+    B -->|"3️⃣ 日程変更"| C
+    B -->|"4️⃣ キャンセル"| C
+    L --> LC{"S2-151 リンク、見つかった？"}
+    LC -->|"1️⃣ 見つかった！"| S["🤖 S2-210 当日楽しんでね😊✨"]
+    LC -->|"2️⃣ 見つからない…"| C
+    C --> H["👤 S2-400 サポートへ（24時間以内）"]
+</div></p>
+<table>
+<thead>
+<tr>
+<th>階層</th>
+<th>選択肢の文言（ボタン）</th>
+<th>対応する束ID・件数</th>
+<th>終端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1（S2-000）</td>
+<td>1️⃣ 面談・1on1・コンサル</td>
+<td>S2-01 499</td>
+<td>👤サポート（層2経由）</td>
+</tr>
+<tr>
+<td>1（S2-000）</td>
+<td>2️⃣ セミナー・合宿・勉強会などのイベント</td>
+<td>S2-02 200</td>
+<td>👤サポート（層2経由）</td>
+</tr>
+<tr>
+<td>1（S2-000）</td>
+<td>3️⃣ 入室のしかた・Zoomリンクが分からない</td>
+<td>S2-04 34</td>
+<td>🤖一次案内 → 見つからなければ👤サポート</td>
+</tr>
+<tr>
+<td>1（S2-000）</td>
+<td>4️⃣ その他</td>
+<td>S2-05 束外 14</td>
+<td>👤サポート（層2経由）</td>
+</tr>
+<tr>
+<td>1（S2-000）</td>
+<td>（任意）5️⃣ イベントの日時・締切を見る</td>
+<td>S2-02の一部（「何時から？」系）</td>
+<td>🤖イベント情報へ〔要確認: 正規導線があれば追加〕</td>
+</tr>
+<tr>
+<td>2（S2-100）</td>
+<td>1️⃣ 新しく予約したい ／ 2️⃣ 予約の確認 ／ 3️⃣ 日程変更 ／ 4️⃣ キャンセル</td>
+<td>3️⃣4️⃣がS2-03 95 に対応（1️⃣2️⃣は層1の束に内包）</td>
+<td>👤サポート</td>
+</tr>
+<tr>
+<td>2（S2-151）</td>
+<td>1️⃣ 見つかった！ ／ 2️⃣ 見つからない…</td>
+<td>—</td>
+<td>🤖送り出し ／ 👤サポート</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MECEの根拠</strong>: 5束842件（499+200+95+34+14=842）。層1は「対象」で切り、層2は予約操作の全集合（新規/確認/変更/キャンセル）＝論理的にMECE。受け皿=層1の4️⃣その他。ダブり判定ルール: 対象が面談かイベントか曖昧でも層2と聞き取り（S2-300②）で特定されるため事故にならない。</p>
+<hr />
+<h2>💳 サービス③ お支払い・ご契約について（S3・666件）</h2>
+<p><strong>分岐の考え方</strong>: 金額・契約・解約の中身にAIが踏み込まない＝<strong>全件👤サポート（必ず人）</strong>。分岐の目的は回答の出し分けではなく「受け止め文言と集める情報の出し分け」＋「HANDOFFの優先度フラグ」。この相談だけ少し丁寧め。</p>
+<p><div class="mermaid">flowchart TD
+    A{"S3-000 お支払い・ご契約のことだね。<br>どんなご相談か、近いものを選んでね👇"} -->|"1️⃣ 解約・退会・返金について"| B1["S3-110 とくに丁寧な受け止め<br>＋聞き取り（優先度フラグ）"]
+    A -->|"2️⃣ 不安なこと・気になることがある"| B2["S3-120 最優先の受け止め<br>＋聞き取り（優先度フラグ）"]
+    A -->|"3️⃣ 引き落とし・支払いがうまくいかない"| B3["S3-130 明細の聞き取り"]
+    A -->|"4️⃣ 登録情報（メール/住所/氏名/電話）の変更"| B4["S3-140 変更内容の聞き取り"]
+    A -->|"5️⃣ 受講期間・延長・更新について"| B5["S3-150 一般の聞き取り<br>（【相談内容】=受講期間）"]
+    A -->|"6️⃣ 料金・契約内容・その他"| B6["S3-150 一般の聞き取り"]
+    B1 & B2 & B3 & B4 & B5 & B6 --> H["👤 S3-400 サポートへ（必ず人・24時間以内）<br>※解約・不信は優先度フラグ付き"]
+</div></p>
+<table>
+<thead>
+<tr>
+<th>階層</th>
+<th>選択肢の文言（ボタン）</th>
+<th>対応する束ID・件数</th>
+<th>終端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1（S3-000）</td>
+<td>1️⃣ 解約・退会・返金について</td>
+<td>S3-01 334</td>
+<td>👤サポート（優先度フラグ）</td>
+</tr>
+<tr>
+<td>1（S3-000）</td>
+<td>2️⃣ 不安なこと・気になることがある</td>
+<td>S3-05 クレーム・不信・クーリングオフ 26 ＋ S3-07 会社への不信/重大発表 16</td>
+<td>👤サポート（優先度フラグ）</td>
+</tr>
+<tr>
+<td>1（S3-000）</td>
+<td>3️⃣ 引き落とし・支払いがうまくいかない</td>
+<td>S3-04 31</td>
+<td>👤サポート</td>
+</tr>
+<tr>
+<td>1（S3-000）</td>
+<td>4️⃣ 登録情報（メール/住所/氏名/電話）の変更</td>
+<td>S3-08 11</td>
+<td>👤サポート（事務手続き）</td>
+</tr>
+<tr>
+<td>1（S3-000）</td>
+<td>5️⃣ 受講期間・延長・更新について</td>
+<td>S3-06 20</td>
+<td>👤サポート</td>
+</tr>
+<tr>
+<td>1（S3-000）</td>
+<td>6️⃣ 料金・契約内容・その他</td>
+<td>S3-02 料金・プラン・契約内容 130 ＋ S3-09 領収書・インボイス 3 ＋ S3-03 束外 95</td>
+<td>👤サポート</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MECEの根拠</strong>: 9束666件（334+130+95+31+26+20+16+11+3=666）を6択で全カバー。受け皿=6️⃣「料金・契約内容・その他」。ダブり判定ルール: 解約の気配と他テーマが混ざる質問（例: 「引き落としが変だから解約したい」）は<strong>1️⃣解約側に寄せる</strong>（もっとも丁寧に扱うべき側へ）。並びは頻度順でなくセンシティブ優先（原則3の例外(b)）。</p>
+<blockquote>
+<p>※既存S3-000（5択）からの再設計。詳細は文末「既存設計からの変更点」②。</p>
+</blockquote>
+<hr />
+<h2>📂 サービス④ 資料・アーカイブ・特典の場所を知りたい（S4・373件）</h2>
+<p><strong>分岐の考え方</strong>: 場所が流動的＝原則👤サポート。ただし「アーカイブの場所／公開時期／ワークシート提出」の3つだけ即答スロット（ON/OFF切替可）を持つ2段構え。</p>
+<p><div class="mermaid">flowchart TD
+    A{"S4-000 資料・アーカイブ・特典の場所だね！💡<br>何を探してるか教えてね👇"} -->|"1️⃣ アーカイブ・録画はどこで見れる？"| C1["🤖 S4-111 即答スロット〔ON/OFF〕"]
+    A -->|"2️⃣ アーカイブ・録画はいつ公開される？"| C2["🤖 S4-121 即答スロット"]
+    A -->|"3️⃣ ワークシート・課題はどこに出す？"| C3["🤖 S4-131 即答スロット"]
+    A -->|"4️⃣ 教材・コースの場所"| F["S4-300 聞き取り<br>①探しもの ②コース名・セミナー名"]
+    A -->|"5️⃣ 特典の受け取り"| F
+    A -->|"6️⃣ オープンチャット・リッチメニューの場所"| F
+    A -->|"7️⃣ その他・探しものが見つからない"| F
+    C1 & C2 & C3 --> D{"S4-200 解決した？"}
+    D -->|"1️⃣ 見つかった！"| S["🤖 S4-210 送り出し→学習へ"]
+    D -->|"2️⃣ 見つからない…"| F
+    F --> H["👤 S4-400 サポートへ（24時間以内）"]
+</div></p>
+<table>
+<thead>
+<tr>
+<th>階層</th>
+<th>選択肢の文言（ボタン）</th>
+<th>対応する束ID・件数</th>
+<th>終端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1（S4-000）</td>
+<td>1️⃣ アーカイブ・録画はどこで見れる？</td>
+<td>S4-01 154</td>
+<td>🤖即答〔ON時〕 → 未解決なら👤サポート</td>
+</tr>
+<tr>
+<td>1（S4-000）</td>
+<td>2️⃣ アーカイブ・録画はいつ公開される？</td>
+<td>S4-04 26</td>
+<td>🤖即答 → 未解決なら👤サポート</td>
+</tr>
+<tr>
+<td>1（S4-000）</td>
+<td>3️⃣ ワークシート・課題はどこに出す？</td>
+<td>S4-03 65</td>
+<td>🤖即答 → 未解決なら👤サポート</td>
+</tr>
+<tr>
+<td>1（S4-000）</td>
+<td>4️⃣ 教材・コースの場所</td>
+<td>S4-02 69</td>
+<td>👤サポート（聞き取り直行）</td>
+</tr>
+<tr>
+<td>1（S4-000）</td>
+<td>5️⃣ 特典の受け取り</td>
+<td>S4-05 26</td>
+<td>👤サポート（聞き取り直行）</td>
+</tr>
+<tr>
+<td>1（S4-000）</td>
+<td>6️⃣ オープンチャット・リッチメニューの場所</td>
+<td>S4-06 25</td>
+<td>👤サポート（聞き取り直行）</td>
+</tr>
+<tr>
+<td>1（S4-000）</td>
+<td>7️⃣ その他・探しものが見つからない</td>
+<td>S4-07 束外 8</td>
+<td>👤サポート（聞き取り直行）</td>
+</tr>
+<tr>
+<td>2（S4-200）</td>
+<td>1️⃣ 見つかった！ ／ 2️⃣ 見つからない…</td>
+<td>—</td>
+<td>🤖送り出し ／ 👤サポート</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MECEの根拠</strong>: 7束373件（154+69+65+26+26+25+8=373）を7択で1:1カバー。オープンチャット系（25件）を「その他」から独立させたことで、受け皿7️⃣が純粋な受け皿（束外8件のみ）になった（原則4）。即答スロットがOFFの場合も遷移は変わらず全件S4-300経由で👤サポート。</p>
+<blockquote>
+<p>※既存S4-000（6択）からの再設計。詳細は文末「既存設計からの変更点」③。</p>
+</blockquote>
+<hr />
+<h2>💬 その他のご相談（X・1,763件）</h2>
+<p><strong>分岐の考え方</strong>: この分岐の本質は「拾い漏れの受け皿」。①迷子を既存カテゴリへ戻す合流、②本当に雑多なものは受け止めて共有可否を聞く、の2役。深刻トーンだけは確認を挟まず即サポート共有。</p>
+<p><div class="mermaid">flowchart TD
+    A["X-000 どんなことでも大丈夫だよ😊<br>まず、どうしたか教えてくれる？（自由入力）"] --> B["X-010 キーワード判定<br>（E0-010と同じ判定表を共用）"]
+    B -->|"既存カテゴリに該当"| C{"X-011 それなら「◯◯」の相談だね！<br>そっちで詳しく聞いていい？"}
+    C -->|"1️⃣ うん、お願い！"| D["🚪 該当相談の入口へ合流"]
+    C -->|"2️⃣ ちがうんだ"| E["X-100 受け止め<br>（要望/気持ち/雑談の固定文言）"]
+    B -->|"該当なし"| E
+    B -.->|"深刻キーワード検知<br>（つらい・しんどい・続けられない 等）"| H
+    E --> F{"X-101 この内容、サポートにも共有しておこうか？"}
+    F -->|"1️⃣ 共有してほしい"| H["👤 X-400 サポートへ（24時間以内）<br>※深刻トーンは優先度フラグ"]
+    F -->|"2️⃣ ううん、話せてスッキリした！"| S["🤖 X-210 送り出し→学習へ"]
+</div></p>
+<table>
+<thead>
+<tr>
+<th>階層</th>
+<th>選択肢の文言（ボタン）</th>
+<th>対応する束ID・件数</th>
+<th>終端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1（X-011）</td>
+<td>1️⃣ うん、お願い！ ／ 2️⃣ ちがうんだ</td>
+<td>X-01のうち実は既存カテゴリの迷子分</td>
+<td>合流（各相談へ） ／ 受け止めへ</td>
+</tr>
+<tr>
+<td>2（X-101）</td>
+<td>1️⃣ 共有してほしい ／ 2️⃣ ううん、話せてスッキリした！</td>
+<td>X-01 1,763（束に昇格しない雑多・会話断片）</td>
+<td>👤サポート ／ 🤖送り出し</td>
+</tr>
+<tr>
+<td>（自動）</td>
+<td>深刻キーワード検知（つらい・しんどい・続けられない・諦め 等）</td>
+<td>X-01の一部</td>
+<td>👤サポート直行＋優先度フラグ〔要確認: 採否〕</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MECEの根拠</strong>: 「その他」1,763件は定義上「9相談のどれでもない」＝全体の受け皿そのもの。判定表（E0-010共用）で迷子を9相談へ戻し、残りはすべてX-101の2択で終端に届く＝構造的に漏れなし。ダブりは合流確認（X-011）で本人が解消。</p>
+<hr />
+<h2>既存設計からの変更点（詳細設計ファイルへの反映が必要な一覧）</h2>
+<p>束データと <code>../branching_classification.md</code> を根拠に、以下を再設計した。<strong>ボタン文言の粒度の変更のみで、遷移先ノード・繋ぎ先はすべて既存設計と同一</strong>（=菅さんのフロー実装に構造変更は生じない）。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>対象</th>
+<th>既存設計</th>
+<th>本ツリーでの再設計</th>
+<th>根拠</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td>G3-200（添削・見てほしい点）</td>
+<td>2択（1️⃣見てほしい点を書く 2️⃣とりあえず全体を見て）</td>
+<td>6択（ポートフォリオ／提案文・プロフィール／記事・文章／アプリ・制作物／自分で書く／全体を見て）。全選択肢→G3-400で遷移は不変</td>
+<td>束G3-03/G3-04/G3-05と添削サブパターン（提案文=通過率、記事=構成 等）。「言葉にできない人」が束外74件と多く、クイックボタンで言語化を補助</td>
+</tr>
+<tr>
+<td>②</td>
+<td>S3-000（支払い・契約の入口）</td>
+<td>5択（5️⃣が「料金・契約内容・受講期間・その他」）</td>
+<td>6択（「受講期間・延長・更新について」を独立）。聞き取りノードはS3-150を共用、HANDOFFの【相談内容】タグのみ変える</td>
+<td>束S3-06 20件＋その他バケツの「サポート期間・保証年数の確認」昇格候補7件。受講期間は要確認事実（期間/更新条件）に直結するため、HANDOFF時点でタグが付いている方がサポートが速い</td>
+</tr>
+<tr>
+<td>③</td>
+<td>S4-000（資料の場所の入口）</td>
+<td>6択（6️⃣が「その他（オープンチャット・リッチメニューなど）」）</td>
+<td>7択（「オープンチャット・リッチメニューの場所」を独立、7️⃣「その他・探しものが見つからない」を純受け皿化）。遷移は全てS4-300で不変</td>
+<td>束S4-06 25件。25件の具体束を受け皿に混ぜると「どれでもない」が受け皿として機能しなくなるため分離（原則4）</td>
+</tr>
+<tr>
+<td>④</td>
+<td>X（その他）の深刻トーン</td>
+<td>〔要確認2〕として推奨案のみ記載</td>
+<td>分岐としてツリーに明記: 深刻キーワード検知→X-101を挟まずX-400直行＋優先度フラグ（採否は〔要確認〕のまま）</td>
+<td>既存X_その他.mdの推奨案の明文化。メンタル系に「共有する？」の確認を挟むのはリスク</td>
+</tr>
+<tr>
+<td>⑤</td>
+<td>S2-000（予約の入口）</td>
+<td>4択＋UI申し送りに「イベント情報を見るボタンを足す価値あり」</td>
+<td>任意の5️⃣「イベントの日時・締切を見る」を点線で明記〔要確認: 正規導線があれば採用〕</td>
+<td>束S2-02 200件に「何時から？」系が多い（実例: 「何時からですか?」「明日の合宿は何時からでしたっけ？」）。導線があれば最多相談の一部を自己解決化できる</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>〔要確認〕（このツリー固有のもの）</h2>
+<ol>
+<li><strong>変更点①〜③の採否</strong>: ボタン文言の粒度変更。OKなら各詳細設計ファイル（G3/S3/S4）のノード定義にも反映する（遷移は不変なので文言差し替えのみ）。</li>
+<li><strong>変更点④（深刻トーン検知の即共有）の採否</strong>と検知キーワードの確定。</li>
+<li><strong>変更点⑤（S2のイベント情報ボタン）</strong>: イベント情報の正規導線があるか（あれば採用）。</li>
+<li>各ノードの確定文言・URL等の〔要確認〕は各相談ファイル側に集約済み（本ツリーでは繰り返さない）。</li>
+</ol>
+<h2>UI実装への申し送り（菅さん向け）</h2>
+<ul>
+<li>本ツリーは「分岐の見取り図」。実装時のノードID・確定文言・キーワード判定表・HANDOFFテンプレは各相談ファイル（E0/G1〜X）を正本にすること。</li>
+<li>変更点①〜③は文言粒度のみの変更なので、採用時も<strong>フロー構造（ノード・遷移）は既存設計のまま</strong>でよい。</li>
+</ul></main>
+</div></body></html>
