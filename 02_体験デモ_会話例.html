@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>💬 体験デモ（会話例） ｜ 条件分岐 詳細設計</title>
+<style>
+:root{--cream:#FAF6EF;--navy:#1E2A44;--navy2:#2E3E63;--coral:#E8705F;--coral-soft:#FCEAE6;
+--line:#E4DCCB;--card:#FFFFFF;--muted:#6B7280;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--cream);color:var(--navy);line-height:1.75}
+.layout{display:flex;min-height:100vh}
+nav{width:248px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+nav h1{font-size:14px;color:#F5D9A8;margin:0 0 4px;letter-spacing:.05em}
+nav .sub{font-size:11px;color:#AAB4CE;margin-bottom:14px}
+nav a{display:block;color:#E7EBF5;text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:var(--navy2)}
+nav a.active{background:var(--coral);color:#fff;font-weight:600}
+nav .navsec{font-size:10.5px;color:#8E9AB8;margin:14px 0 4px;padding-left:10px;letter-spacing:.1em}
+.dlbtn{display:inline-block;background:var(--navy);color:#fff!important;font-size:11.5px;padding:3px 12px;border-radius:99px;text-decoration:none}
+.dlbtn:hover{background:var(--coral)}
+.chat{display:flex;flex-direction:column;background:#DDE6F2;border-radius:16px;padding:20px 18px;margin:16px 0;max-width:660px}
+.chat .b{max-width:80%;padding:10px 14px;border-radius:15px;margin:5px 0;font-size:13.5px;line-height:1.65;white-space:pre-wrap;box-shadow:0 1px 2px rgba(30,42,68,.12)}
+.chat .bot{background:#fff;align-self:flex-start;border-top-left-radius:4px}
+.chat .user{background:#9FE870;align-self:flex-end;border-top-right-radius:4px}
+.chat .nid{font-size:10.5px;color:#51618A;align-self:flex-start;margin:2px 0 0 6px;font-family:monospace}
+.chat .sys{font-size:11.5px;color:#51618A;align-self:center;margin:10px 0;background:#CBD8EA;padding:2px 14px;border-radius:99px}
+.handoff{background:#FFF6E4;border:1.5px dashed #D9A441;border-radius:12px;padding:12px 16px;margin:10px 0;font-size:12.5px;max-width:660px}
+.handoff .ht{font-weight:700;color:#8A6210;margin-bottom:6px;font-size:12px}
+main{flex:1;padding:34px 44px;max-width:1080px}
+h1{font-size:24px;border-bottom:3px solid var(--coral);padding-bottom:10px;margin-top:0}
+h2{font-size:19px;margin-top:38px;padding-left:12px;border-left:5px solid var(--coral);}
+h3{font-size:16px;color:var(--navy2);margin-top:26px}
+blockquote{background:var(--coral-soft);border-left:4px solid var(--coral);margin:14px 0;padding:10px 16px;border-radius:0 10px 10px 0;color:#5A4340;font-size:13.5px}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--card);font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(30,42,68,.08)}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#FBF9F3}
+td:first-child{white-space:nowrap;font-weight:600;color:var(--navy2)}
+code{background:#EFE9DB;padding:1px 6px;border-radius:5px;font-size:12px;color:#8A4B3F}
+pre{background:var(--navy);color:#E9EDF7;padding:16px 18px;border-radius:12px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0;text-align:center;box-shadow:0 1px 5px rgba(30,42,68,.07)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:var(--navy);box-shadow:0 1px 5px rgba(30,42,68,.07);transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(30,42,68,.14);border-color:var(--coral)}
+.card .t{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;background:var(--coral);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;margin-top:10px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:24px}
+strong{color:#B34A38}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+</style>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({startOnLoad:true, theme:"base", themeVariables:{
+  primaryColor:"#FCEAE6", primaryBorderColor:"#E8705F", primaryTextColor:"#1E2A44",
+  lineColor:"#2E3E63", fontSize:"13px"}});
+</script>
+</head><body><div class="layout">
+<nav><h1>条件分岐 詳細設計</h1><div class="sub">正本=md（このHTMLは閲覧用）</div><a href="01_はじめに_読み方ガイド.html">👋 はじめに（読み方）</a>
+<a href="02_体験デモ_会話例.html" class="active">💬 体験デモ（会話例）</a>
+<a href="99_定例で決めたいこと.html">✅ 定例で決めたいこと</a>
+<a href="README.html">🗂 索引</a>
+<a href="00_共通仕様.html">📐 00 共通仕様</a>
+<a href="E0_入口ルーター.html">🚪 E0 入口ルーター</a>
+<a href="G1_学習①進め方.html">🧭 G1 学習① 進め方</a>
+<a href="G2_学習②講義.html">📘 G2 学習② 講義</a>
+<a href="G3_学習③添削.html">✍️ G3 学習③ 添削</a>
+<a href="G4_学習④案件.html">💼 G4 学習④ 案件</a>
+<a href="S1_サービス①エラー・不具合.html">🛠️ S1 サービス① エラー</a>
+<a href="S2_サービス②予約.html">📅 S2 サービス② 予約</a>
+<a href="S3_サービス③支払い契約.html">💳 S3 サービス③ 支払い</a>
+<a href="S4_サービス④資料.html">📂 S4 サービス④ 資料</a>
+<a href="X_その他.html">💬 X その他</a>
+<div class="navsec">参照元資料（正本）</div>
+<a href="R1_体験像v9.html">📜 体験像 v9（最上位正本）</a>
+<a href="R2_10問診断_質問項目.html">📝 10問診断 質問項目（正本）</a>
+<a href="R3_コース条件分岐ロジックv1.html">🧮 コース分岐ロジック v1（正本）</a>
+<a href="R4_v9対応表_共通ルール.html">🔗 v9↔9相談 対応表</a>
+<a href="R5_根拠データ概要.html">📊 根拠データの概要</a></nav>
+<main><h1>体験デモ ｜ 受講生からはこう見える（会話例4本）</h1>
+<blockquote>
+<p>設計書のノード表を読む前に、<strong>完成後の体験</strong>を先に見てください。<br />
+吹き出しの下の <code>S1-121</code> のような小さな英数字＝設計書のノードIDです。<strong>この会話の1行1行が、各相談ページのノード定義と1:1で対応</strong>しています（＝この会話がそのまま実装仕様です）。</p>
+</blockquote>
+<hr />
+<h2>デモ① その場で解決するパターン（🛠️エラー）</h2>
+<p>いちばん多い「困った→すぐ直った→学習に戻る」の流れ。<strong>人の手を使わず解決</strong>します。</p>
+<div class="chat">
+<div class="b user">ログインできません</div>
+<div class="b bot">もしかして「ログインできない・画面が真っ白」のことかな？
+1️⃣ そう！　2️⃣ ちがう</div>
+<div class="nid">E0-010 キーワード判定 → S1-011 本人確認</div>
+<div class="b user">1️⃣ そう！</div>
+<div class="b bot">ログインできない時は、ログイン画面の「パスワードを忘れた方はこちら」から再設定してみてね。
+画面が真っ白・419エラー・先に進めない時は、受講生サイトのページを一回ぜんぶ閉じてから入り直してみて（ブラウザのcookie/キャッシュ削除も効くよ）💡 直ったら教えてね！</div>
+<div class="nid">S1-121 一次対応（確定文言）</div>
+<div class="b bot">試してみてどうかな？
+1️⃣ 直った！　2️⃣ まだダメ…</div>
+<div class="nid">S1-200 解決確認</div>
+<div class="b user">1️⃣ 直った！</div>
+<div class="b bot">解決したみたいでよかった😊 じゃあ、さっきのアクションの続きに戻ろっか！</div>
+<div class="nid">S1-210 送り出し（＝v9「必ず学習に戻す」）</div>
+</div>
+
+<p><strong>見どころ</strong>: 自由入力でもキーワード判定→本人確認を挟むので、LLMなしでも会話が破綻しない。解決で終わらず必ず学習に送り出す。</p>
+<hr />
+<h2>デモ② 人に繋ぐパターン（🛠️エラー・直らなかった続き）</h2>
+<p>一次対応で直らない場合。<strong>受講生に同じ説明を二度させず、整えてからサポートに渡す</strong>のがキモ。</p>
+<div class="chat">
+<div class="b user">2️⃣ まだダメ…</div>
+<div class="b bot">オッケー、サポートにスムーズに繋ぐために、順番に教えてね（1つずつでOK）👇
+まず、どんな症状？（何が起きてるか、ひとことでOK）</div>
+<div class="nid">S1-300 聞き取り①症状</div>
+<div class="b user">パスワードを再設定してもまたエラーが出ます</div>
+<div class="b bot">ありがとう！次に、その画面のスクショを送ってね（これは必須📸 サポートが一発で状況をつかめるよ）</div>
+<div class="nid">S1-301 聞き取り②スクショ（必須）</div>
+<div class="b user">📷（スクショを添付）</div>
+<div class="b bot">使ってる端末はどれ？
+1️⃣ スマホ（iPhone）　2️⃣ スマホ（Android）　3️⃣ PC（Windows）　4️⃣ PC（Mac）　5️⃣ タブレット</div>
+<div class="nid">S1-302 聞き取り③端末</div>
+<div class="b user">3️⃣ PC（Windows）</div>
+<div class="b bot">ブラウザはどれ？
+1️⃣ Chrome　2️⃣ Safari　3️⃣ Edge　4️⃣ その他/わからない</div>
+<div class="nid">S1-303 聞き取り④ブラウザ</div>
+<div class="b user">1️⃣ Chrome</div>
+<div class="b bot">ぜんぶ整えてサポートに渡したよ！<strong>24時間以内に返事くるからね😊</strong> それまで、できるところから学習を進めてて大丈夫だよ✨</div>
+<div class="nid">S1-400 HANDOFF → S1-401 待ち時間の約束</div>
+</div>
+
+<p>このときサポートには、<strong>下の形に自動で整形されて</strong>届きます（受講生には見えない）:</p>
+<div class="handoff">
+<div class="ht">📨 サポートに届く内容（S1-400が翻訳テンプレに自動整形）</div>
+【相談内容】ログイン不可（PW再設定後もエラー）<br>
+【背景・状況】端末=PC(Windows)／ブラウザ=Chrome／スクショ添付あり<br>
+【してほしいこと】ログインできるようにしたい<br>
+【これまでの経緯】一次対応（PW再設定・キャッシュ削除案内）済み→未解決
+</div>
+
+<p><strong>見どころ</strong>: サポートは一読で動ける。「いつ・どの画面で・何が」の往復ゼロ＝<strong>一次対応の負荷が下がる</strong>。</p>
+<hr />
+<h2>デモ③ 学習系のパターン（📘講義・講師に繋ぐまで粘る）</h2>
+<p>学習の中身は、すぐ人に投げず<strong>一度だけ粘って</strong>から講師へ。</p>
+<div class="chat">
+<div class="b bot">今この「Claude Codeで業務を自動化しよう」の話だよね？😊
+1️⃣ そう！　2️⃣ ちがう話</div>
+<div class="nid">G2-000 今のアクション確認（学習系だけの入口）</div>
+<div class="b user">そう！MCPの設定がよくわからなくて…</div>
+<div class="b bot">（MCP設定のよくある詰まり→解決手順の定型回答を提示）</div>
+<div class="nid">G2-114 回答スロット（定型を積んだ場合。ゼロ本スタートならこのままG2-300へ）</div>
+<div class="b bot">これで解決した？
+1️⃣ 解決した！　2️⃣ まだ分からない…</div>
+<div class="nid">G2-200 解決確認</div>
+<div class="b user">2️⃣ まだ分からない…</div>
+<div class="b bot">もしかして、こういうこと？（角度を変えてもう一度だけ答え直す）</div>
+<div class="nid">G2-201 一度だけ粘る（v9ルール）</div>
+<div class="b user">うーん、ちょっと違うかも</div>
+<div class="b bot">オッケー、ここは講師に繋ぐのがいちばん早いね！
+「①何をしたいか ②どこで詰まってるか」だけ教えてくれたら、こっちで整えて講師に送っておくよ（書き直さなくてOK）</div>
+<div class="nid">G2-300 聞き取り</div>
+<div class="b user">①LINE botを作りたい ②APIキーをどこに書けばいいか分からない</div>
+<div class="b bot">講師に送っておいたよ！<strong>24時間以内に返事くるからね😊</strong> それまで進められるところ、あれば進めてて大丈夫だよ✨</div>
+<div class="nid">G2-400 HANDOFF（講師へ） → G2-401</div>
+</div>
+
+<p><strong>見どころ</strong>: 学習の中身は<strong>講師</strong>へ（サービス系はサポートへ、の繋ぎ分け）。粘り→整理→ワンセットで渡すから、講師も一読で答えられる。</p>
+<hr />
+<h2>デモ④ センシティブなパターン（💳解約・必ず人へ）</h2>
+<p>お金・契約は<strong>AIが一切答えない</strong>。受け止めて、整えて、人へ。トーンもここだけ丁寧め。</p>
+<div class="chat">
+<div class="b user">解約を考えています</div>
+<div class="b bot">お支払い・ご契約のことだね。正確にお伝えしたいから、ここは担当者からきちんとご案内するね🙇 どんなご相談か、近いものを選んでね👇
+1️⃣ 解約・退会・返金について
+2️⃣ 不安なこと・気になることがある
+（…以下略）</div>
+<div class="nid">S3-000 入口（この相談だけ丁寧トーン）</div>
+<div class="b user">1️⃣ 解約・退会・返金について</div>
+<div class="b bot">ご相談ありがとう。不安にさせていたらごめんね。ここは正確にお伝えしたいから、担当者にしっかり繋ぐね🙇
+①お名前 ②いま気になっていること を教えてもらえる？順番に確認してご連絡します。</div>
+<div class="nid">S3-110 とくに丁寧な受け止め（金額・条件・可否は即答しない）</div>
+<div class="b user">◯◯です。成果が出る前に受講期間が終わりそうで不安で…</div>
+<div class="b bot">内容を整えて担当に繋ぎました。<strong>24時間以内にお返事するね。</strong>ご不安なままにしないよう、順番にきちんとご案内します🙇</div>
+<div class="nid">S3-400 HANDOFF（優先度フラグ付きで必ず人へ） → S3-401</div>
+</div>
+
+<p><strong>見どころ</strong>: AIが金額・契約を答える事故をゼロにする設計。解約の気配には優先度フラグを付けてサポートの初動を早くする。</p>
+<hr />
+<h2>この4本で全パターンです</h2>
+<p>9相談すべて、この4つの型（<strong>その場で解決／聞き取って人へ／粘ってから講師へ／丁寧に必ず人へ</strong>）の組み合わせでできています。各相談の詳細は左ナビの設計ページへ。</p></main>
+</div></body></html>
